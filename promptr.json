@@ -1,0 +1,20 @@
+{
+    "promptr_config": 12,
+    "segments": [
+        {
+            "name": "username"
+        },
+        {
+            "name": "hostname"
+        },
+        {
+            "name": "paths"
+        },
+        {
+            "name": "git"
+        },
+        {
+            "name": "command_status"
+        }
+    ]
+}
