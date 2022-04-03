@@ -55,16 +55,16 @@ source <(promptr load)>
 
 ## Usage
 
-Batteries *are* included.  Once you run the init command you don't need to do anything else.  If you want to add or remove segments, change colors, or change icons the configuration file is in a platform specific location.  Run `promptr dump-location` to get the path to the configuration directory on your system.  For e.g.:
+Batteries *are* included.  Once you run the init command you don't need to do anything else.  If you want to add or remove segments, change colors, or change icons the configuration file is in a platform specific location.  Run `promptr location` to get the path to the configuration directory on your system.  For e.g.:
 
 ```
 $ uname -s
 Darwin
 $ whoami
 crash_override
-$ promptr dump-location
+$ promptr location
 /Users/crash_override/Library/Application Support/com.inferiorhumanorgans.promptr
-$ file "$(promptr dump-location)/promptr.json"
+$ file "$(promptr location)/promptr.json"
 /Users/crash_override/Library/Application Support/com.inferiorhumanorgans.promptr/promptr.json: ASCII text
 ```
 
@@ -73,9 +73,9 @@ $ uname -s
 FreeBSD
 $ whoami
 beastie
-$ promptr dump-location
+$ promptr location
 /home/beastie/.config/promptr
-$ file "$(promptr dump-location)/promptr.json"
+$ file "$(promptr location)/promptr.json"
 /home/beastie/.config/promptr/promptr.json: JSON data
 ```
 

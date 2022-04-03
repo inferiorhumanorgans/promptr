@@ -59,16 +59,16 @@ enum Commands {
     /// This command takes one argument: the index of a segment to display.  Running this command
     /// will print out a plain text representation of the foreground and background colors, text,
     /// and separator for the specified segment.
-    DumpSegment(SubCmdDumpSegmentArgs),
+    Segment(SubCmdDumpSegmentArgs),
 
     /// Print the current configuration as JSON
-    DumpConfig,
+    CurrentConfig,
 
     /// Print the default configuration in all its glory
-    DumpDefaultConfig,
+    DefaultConfig,
 
     /// Print the location of the configuration directory
-    DumpLocation,
+    Location,
 
     /// Same as init but without attempting to create/copy a default config file
     Load,
@@ -345,7 +345,7 @@ fn main() -> Result<()> {
 
             print!("{} ", ansi::Color::reset_colors());
         },
-        Commands::DumpSegment(args) => {
+        Commands::Segment(args) => {
             let config = load_config(false);
             let segments = load_segments(config)?.collect_vec();
             match segments.get(args.idx) {
@@ -353,16 +353,16 @@ fn main() -> Result<()> {
                 None => eprintln!("Segment not found, count={}", segments.len()),
             }
         }
-        Commands::DumpDefaultConfig => {
+        Commands::DefaultConfig => {
             let config = PromptrConfig::default();
             println!("{}", serde_json::to_string_pretty(&config).unwrap());
         },
-        Commands::DumpConfig => {
+        Commands::CurrentConfig => {
             let config = load_config(true);
 
             println!("{}", serde_json::to_string_pretty(&config).unwrap());
         }
-        Commands::DumpLocation => match config_dir() {
+        Commands::Location => match config_dir() {
             Ok(dir) => println!("{}", dir.to_str().unwrap()),
             Err(_) => eprintln!("I couldn't find a good place to keep my configuration files."),
         },

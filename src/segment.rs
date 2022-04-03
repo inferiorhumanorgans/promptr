@@ -27,7 +27,7 @@ pub struct Segment {
     pub text: String,
     /// Type of trailing separator to be shown. Note that the last segment always gets a "thick" separator shown after.
     pub separator: Separator,
-    /// Debugging info visible from the `dump-segment` subcommand
+    /// Debugging info visible from the `segment` subcommand
     pub source: &'static str,
 }
 
