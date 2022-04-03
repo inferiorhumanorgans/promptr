@@ -35,7 +35,10 @@ impl ToSegment for Username {
     type Args = Args;
     type Theme = Theme;
 
-    fn to_segment(_args: Option<Self::Args>, state: &ApplicationState) -> crate::Result<Vec<Segment>> {
+    fn to_segment(
+        _args: Option<Self::Args>,
+        state: &ApplicationState,
+    ) -> crate::Result<Vec<Segment>> {
         let theme = &state.theme.username;
 
         let text = env::var("USER").expect("Couldn't determine username");

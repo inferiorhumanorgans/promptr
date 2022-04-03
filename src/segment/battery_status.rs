@@ -54,7 +54,10 @@ impl ToSegment for BatteryStatus {
     type Args = Args;
     type Theme = Theme;
 
-    fn to_segment(args: Option<Self::Args>, state: &ApplicationState) -> crate::Result<Vec<Segment>> {
+    fn to_segment(
+        args: Option<Self::Args>,
+        state: &ApplicationState,
+    ) -> crate::Result<Vec<Segment>> {
         let args = args.unwrap_or_default();
 
         let theme = &state.theme.battery;

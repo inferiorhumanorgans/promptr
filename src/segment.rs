@@ -33,8 +33,7 @@ pub struct Segment {
 
 /// Implement this trait for each potential segment.  It's generic over the `Deserialize` trait
 /// so that each segment can have strongly typed arguments loaded from the configuration file.
-pub trait ToSegment
-{
+pub trait ToSegment {
     type Args: Deserialize<'static>;
     type Theme: Deserialize<'static>;
 

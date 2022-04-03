@@ -166,11 +166,7 @@ impl Stats {
     pub fn dirty(&self) -> bool {
         let filth = self.changed + self.conflicted + self.staged + self.untracked;
 
-        if filth > 0 {
-            true
-        } else {
-            false
-        }
+        filth > 0
     }
 }
 
@@ -178,7 +174,10 @@ impl ToSegment for Git {
     type Args = Args;
     type Theme = super::vcs::Theme;
 
-    fn to_segment(args: Option<Self::Args>, state: &ApplicationState) -> crate::Result<Vec<Segment>> {
+    fn to_segment(
+        args: Option<Self::Args>,
+        state: &ApplicationState,
+    ) -> crate::Result<Vec<Segment>> {
         let args = args.unwrap_or_default();
 
         let repo = Repository::open(".")?;

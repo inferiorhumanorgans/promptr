@@ -178,13 +178,7 @@ impl SegmentConfig {
     /// This ensure serde skips writing those out.
     fn serialize_optional_json(value: &Option<serde_json::Value>) -> bool {
         match value {
-            Some(value) => {
-                if matches!(value, serde_json::Value::Null) {
-                    true
-                } else {
-                    false
-                }
-            }
+            Some(value) => matches!(value, serde_json::Value::Null),
             None => true,
         }
     }
@@ -343,7 +337,7 @@ fn main() -> Result<()> {
             }
 
             print!("{} ", ansi::Color::reset_colors());
-        },
+        }
         Commands::Segment(args) => {
             let config = load_config(false);
 
@@ -361,7 +355,7 @@ fn main() -> Result<()> {
         Commands::DefaultConfig => {
             let config = PromptrConfig::default();
             println!("{}", serde_json::to_string_pretty(&config).unwrap());
-        },
+        }
         Commands::CurrentConfig => {
             let config = load_config(true);
 
