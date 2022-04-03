@@ -60,10 +60,6 @@ impl Shell {
                         unset promptr_conf_dir
                         unset promptr_conf_file
 
-                        alias promptr-seg='hostname=$HOSTNAME code=123 {promptr} dump-segment'
-                        alias promptr-config='{promptr} dump-config'
-                        alias promptr-location='{promptr} dump-location'
-
                         PROMPT_COMMAND=promptr_prompt
                         promptr_prompt() {{
                             PS1="$(hostname=$HOSTNAME code=$? jobs=$(jobs -p | wc -l) {promptr} prompt)"
@@ -91,10 +87,6 @@ impl Shell {
 
                         unset promptr_conf_dir
                         unset promptr_conf_file
-
-                        alias promptr-seg='hostname=$HOSTNAME code=123 {promptr} dump-segment'
-                        alias promptr-config='{promptr} dump-config'
-                        alias promptr-location='{promptr} dump-location'
 
                         PROMPT_COMMAND=promptr_prompt
                         promptr_prompt() {{

@@ -56,10 +56,9 @@ enum Commands {
 
     /// Print the current state of a segment.
     ///
-    /// This command is typically aliased to «promptr-seg» but can also be called directly.  The
-    /// lone agument is the index of the segment to display.  Running this command will print out
-    /// a plain text representation of the foreground and background colors, text, and separator
-    /// for the specified segment.
+    /// This command takes one argument: the index of a segment to display.  Running this command
+    /// will print out a plain text representation of the foreground and background colors, text,
+    /// and separator for the specified segment.
     DumpSegment(SubCmdDumpSegmentArgs),
 
     /// Print the current configuration as JSON
