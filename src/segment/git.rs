@@ -33,7 +33,10 @@ fn seg_ahead_behind(
     let head_name = head.shorthand().unwrap();
     let head_branch = repo.find_branch(head_name, BranchType::Local).unwrap();
     let head_oid = head.target().unwrap();
-    let upstream_branch = head_branch.upstream().unwrap();
+    let upstream_branch = match head_branch.upstream() {
+        Ok(upstream) => upstream,
+        Err(_) => return, // No upstream to track so we can't generate meaningful info.
+    };
     let upstream_oid = upstream_branch.get().target().unwrap();
 
     if let Ok((ahead, behind)) = repo.graph_ahead_behind(head_oid, upstream_oid) {
