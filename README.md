@@ -39,13 +39,19 @@ cargo install promptr
 
 ### Shell Integration
 
-After installing the `promptr` binary, the next step is to tell `bash` to call `promptr` each time a new prompt is rendered.  This will do the trick:
+After installing the `promptr` binary, the next step is to tell `bash` to call `promptr` each time a new prompt is rendered.  For your first time this will do the trick:
 
 ```bash
 source <(promptr init)>
 ```
 
-To persist this across every invocation add that to your `.bash_profile`, `.profile`, or `.bashrc` as appropriate.  Which file your instance of `bash` will load depends on your operating system and local configuration.
+`promptr init` will ensure that the configuration directory exists and if no configuration file exists the default configuration will be written to disk.
+
+To persist this across every invocation add that to your `.bash_profile`, `.profile`, or `.bashrc` as appropriate.  Which file your instance of `bash` will load depends on your operating system and local configuration.  If you would like a quieter startup experience place this in your `bash` file instead:
+
+```bash
+source <(promptr load)>
+```
 
 ## Usage
 

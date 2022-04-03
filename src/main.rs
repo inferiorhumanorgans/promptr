@@ -49,13 +49,10 @@ struct TopLevelArgs {
 #[derive(Subcommand, PartialEq)]
 enum Commands {
     /// Prints out the shell commands required to load and enable
-    /// promptr.
+    /// promptr for the first run.
     ///
     /// From a bash instance run: source <(promptr init)
     Init,
-
-    /// This subcommand generates the prompt displayed by the command shell.  Don't call directly
-    Prompt,
 
     /// Print the current state of a segment.
     ///
@@ -68,8 +65,17 @@ enum Commands {
     /// Print the current configuration as JSON
     DumpConfig,
 
+    /// Print the default configuration in all its glory
+    DumpDefaultConfig,
+
     /// Print the location of the configuration directory
     DumpLocation,
+
+    /// Same as init but without attempting to create/copy a default config file
+    Load,
+
+    /// This subcommand generates the prompt displayed by the command shell.  Don't call directly
+    Prompt,
 }
 
 #[doc(hidden)]
@@ -313,6 +319,7 @@ fn main() -> Result<()> {
 
     match args.command {
         Commands::Init => shell.generate_init(&self_exe),
+        Commands::Load => shell.generate_loader(&self_exe),
         Commands::Prompt => {
             let config = load_config(false);
             let segments = load_segments(config)?;
@@ -338,7 +345,7 @@ fn main() -> Result<()> {
             }
 
             print!("{} ", ansi::Color::reset_colors());
-        }
+        },
         Commands::DumpSegment(args) => {
             let config = load_config(false);
             let segments = load_segments(config)?.collect_vec();
@@ -347,6 +354,10 @@ fn main() -> Result<()> {
                 None => eprintln!("Segment not found, count={}", segments.len()),
             }
         }
+        Commands::DumpDefaultConfig => {
+            let config = PromptrConfig::default();
+            println!("{}", serde_json::to_string_pretty(&config).unwrap());
+        },
         Commands::DumpConfig => {
             let config = load_config(true);
 

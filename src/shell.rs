@@ -51,10 +51,42 @@ impl Shell {
                             mkdir "${{promptr_conf_dir}}"
                         fi
                         if [ ! -f "${{promptr_conf_file}}" ]; then
-                            echo "Saving default configuration at ${{promptr_conf_file}}"
+                            echo "Preserving default configuration at ${{promptr_conf_file}}"
                             {promptr} dump-config > "${{promptr_conf_file}}"
                         else
                             echo "Found an existing configuration at ${{promptr_conf_file}}"
+                        fi
+
+                        unset promptr_conf_dir
+                        unset promptr_conf_file
+
+                        alias promptr-seg='hostname=$HOSTNAME code=123 {promptr} dump-segment'
+                        alias promptr-config='{promptr} dump-config'
+                        alias promptr-location='{promptr} dump-location'
+
+                        PROMPT_COMMAND=promptr_prompt
+                        promptr_prompt() {{
+                            PS1="$(hostname=$HOSTNAME code=$? jobs=$(jobs -p | wc -l) {promptr} prompt)"
+                        }}
+                    "##
+                    ),
+                    promptr = self_exe,
+                )
+            }
+        }
+    }
+
+    pub fn generate_loader(&self, self_exe: &str) {
+        match self {
+            Self::Bash => {
+                println!(
+                    indoc!(
+                    r##"
+                        promptr_conf_dir=$({promptr} dump-location)
+                        promptr_conf_file="${{promptr_conf_dir}}/promptr.json"
+
+                        if [ ! -f "${{promptr_conf_file}}" ]; then
+                            echo "Couldn't find an existing configuration file, using the defaults"
                         fi
 
                         unset promptr_conf_dir
