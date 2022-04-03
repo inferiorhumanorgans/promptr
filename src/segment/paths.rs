@@ -12,7 +12,6 @@ use crate::{ApplicationState, Color, Separator};
 
 pub struct Paths {}
 
-
 /// Argumnts for the `Paths` segment.
 #[derive(Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -29,7 +28,7 @@ pub struct Args {
 pub struct Theme {
     pub fg: Color,
     pub bg: Color,
-    
+
     pub home_fg: Color,
     pub home_bg: Color,
 

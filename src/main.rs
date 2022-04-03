@@ -105,18 +105,9 @@ pub struct SegmentConfig {
 
 /// Represents the contents of a JSON config file.
 ///
-/// The available segments are described in the [`segment`] module.
-/// With no config file the defaults are silently used.  In JSON format the defaults settings are:
-/// ```json
-/// {
-///   "promptr_config": 12,
-///   "segments": [
-///     { "name": "username"},
-///     { "name": "paths"},
-///     { "name": "command_status"}
-///   }
-/// }
-/// ```
+/// The available segments are described in the [`segment`] module.  If no config file is found,
+/// the defaults are used.  Both the active and default configurations can be viewed in JSON via
+/// the `promptr current-config` and `promptr default-config` commands respectively.
 #[derive(Deserialize, Debug, Serialize)]
 pub struct PromptrConfig {
     /// Magic number, currently needs to be 12.
@@ -127,7 +118,15 @@ pub struct PromptrConfig {
 
     /// Theme options.  Each module under [`segment`] defines a Theme object with the configurable
     /// colors specific to each segment.  The only parts that need to be specified are those that
-    /// you wish to override.
+    /// you wish to override.  For instance to override only the background color for the [`Hostname`](`segment::hostname`)
+    /// segment your theme stanza would look like this:
+    /// ```json
+    /// {
+    ///     "hostname": { "bg": 128 }
+    /// }
+    /// ```
+    ///
+    /// In this case `bg` is a [`Color`] object which can be represented by an integer.
     #[serde(default)]
     pub theme: Theme,
 }
@@ -347,7 +346,13 @@ fn main() -> Result<()> {
         },
         Commands::Segment(args) => {
             let config = load_config(false);
+
+            // Mock the variables needed to render the segments
+            env::set_var("code", "123");
+            env::set_var("hostname", "dummy-hostname.dummy-domain");
+
             let segments = load_segments(config)?.collect_vec();
+
             match segments.get(args.idx) {
                 Some(seg) => eprintln!("{:#?}", seg),
                 None => eprintln!("Segment not found, count={}", segments.len()),

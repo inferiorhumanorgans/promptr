@@ -1,3 +1,4 @@
+//! The `BatteryStatus` segment shows current state-of-charge and charging status, if applicable
 use anyhow::anyhow;
 use battery::State as BatteryState;
 use serde::{Deserialize, Serialize};
@@ -48,7 +49,6 @@ impl Default for Args {
         }
     }
 }
-
 
 impl ToSegment for BatteryStatus {
     type Args = Args;

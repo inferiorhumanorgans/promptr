@@ -1,4 +1,7 @@
-//! The `Username` segment
+//! The `Username` segment displays the current username and provides a `sudo` indicator
+//!
+//! **TODO** check `${SUDO_UID}` to determine if we're being run in a `sudo` context
+
 use std::env;
 
 use serde::{Deserialize, Serialize};

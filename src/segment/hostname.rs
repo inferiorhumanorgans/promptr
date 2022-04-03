@@ -1,3 +1,5 @@
+//! The `Hostname` segment diplays the system hostname
+
 use std::env;
 
 use serde::{Deserialize, Serialize};

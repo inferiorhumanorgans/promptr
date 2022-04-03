@@ -1,3 +1,5 @@
+//! The `Git` segment displays information about a git repository
+
 use anyhow::anyhow;
 use git2::{BranchType, ErrorCode, Repository, StatusOptions};
 use serde::Deserialize;
@@ -8,7 +10,10 @@ use crate::{ApplicationState, Separator};
 
 pub struct Git {}
 
-#[derive(Default, Deserialize)]
+/// Arguments for the `Git` segment
+///
+/// **TODO** make a variety of things configurable here including which segments to display.
+#[derive(Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Args {}
 

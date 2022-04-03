@@ -1,3 +1,5 @@
+//! The `CommandStatus` segment displays the root / non-privileged indicator and the last exit value
+
 use serde::{Deserialize, Serialize};
 
 use crate::segment::{Segment, ToSegment};

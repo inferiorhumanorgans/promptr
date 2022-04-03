@@ -113,3 +113,7 @@ jqi 'del(.theme.vcs.symbols.git)' "$(promptr location)/promptr.json"
 # Set the git symbol to "", don't do this.  Use the appropriate flag instead
 jqi  '.theme.vcs.symbols.git = ""' "$(promptr location)/promptr.json"
 ```
+
+## TODO
+
+* `promptr explain` to show the documentation for a segment on the command line

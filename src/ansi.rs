@@ -4,7 +4,24 @@ use std::fmt::{self, Display};
 
 use serde::{Deserialize, Serialize};
 
-/// Stores an color that can be used with an [`AnsiCommand`]
+/// Colors that can be used with an [`AnsiCommand`]
+///
+/// ## Usage in a configuration file
+/// To reference a color from the 256-color palette simply use an integer from 0–255. e.g.:
+/// ```json
+/// { "bg": 240 }
+/// ```
+///
+/// A 24-bit color is represented by a struct like so:
+/// ```json
+/// {
+///     "bg": {
+///         "r": 255,
+///         "g": 80,
+///         "b": 95
+///     }
+/// }
+/// ```
 #[derive(Copy, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum Color {
@@ -34,6 +51,8 @@ pub enum AnsiCommand {
 }
 
 /// Writes an ANSI escape sequence out to a `String`
+///
+/// **TODO** Figure out how multi-shell support should work
 pub fn escape<S: Into<Option<String>>>(cmd: AnsiCommand, args: S) -> String {
     let args = args.into();
     match args {
