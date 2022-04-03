@@ -105,11 +105,11 @@ jqi() {
 }
 
 # Change the git symbol to "(git)"
-jqi  '.theme.vcs.symbols.git = "(git)"' ~/Library/Application\ Support/com.inferiorhumanorgans.promptr/promptr.json
+jqi  '.theme.vcs.symbols.git = "(git)"' "$(promptr location)/promptr.json"
 
 # Revert back to the default git symbol
-jqi 'del(.theme.vcs.symbols.git)' ~/Library/Application\ Support/com.inferiorhumanorgans.promptr/promptr.json
+jqi 'del(.theme.vcs.symbols.git)' "$(promptr location)/promptr.json"
 
 # Set the git symbol to "", don't do this.  Use the appropriate flag instead
-jqi  '.theme.vcs.symbols.git = ""' ~/Library/Application\ Support/com.inferiorhumanorgans.promptr/promptr.json
+jqi  '.theme.vcs.symbols.git = ""' "$(promptr location)/promptr.json"
 ```
