@@ -75,7 +75,7 @@ pub enum Separator {
 /// Contains colors for the active theme.
 ///
 /// All fields implement `serde(default)` and are thus optional.
-#[derive(Clone, Default, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     /// Theme for the [`battery_status`](`segment::battery_status`) segment.
@@ -95,6 +95,8 @@ pub struct Theme {
     pub username: segment::username::Theme,
 
     pub paths: segment::paths::Theme,
+
+    pub thin_separator_fg: ansi::Color,
 }
 
 impl Default for PromptrConfig {
@@ -138,6 +140,20 @@ impl Display for Separator {
         match self {
             Self::Thin => write!(f, "\u{e0b1}"),
             Self::Thick => write!(f, "\u{e0b0}"),
+        }
+    }
+}
+
+impl Default for Theme {
+    fn default() -> Self {
+        Self {
+            battery: Default::default(),
+            command_status: Default::default(),
+            hostname: Default::default(),
+            vcs: Default::default(),
+            username: Default::default(),
+            paths: Default::default(),
+            thin_separator_fg: ansi::Color::Numbered(244),
         }
     }
 }

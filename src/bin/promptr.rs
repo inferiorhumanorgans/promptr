@@ -12,7 +12,7 @@ use std::path::PathBuf;
 use libpromptr::ansi::Color;
 use libpromptr::segment::{self, Segment, ToSegment};
 use libpromptr::shell::Shell;
-use libpromptr::{ApplicationState, PromptrConfig, SegmentConfig};
+use libpromptr::{ApplicationState, PromptrConfig, SegmentConfig, Separator};
 
 /// promptr is a colorful, rusty prompt generator for bash.
 #[derive(Parser)]
@@ -166,11 +166,17 @@ fn main() -> Result<()> {
         Commands::Load => shell.generate_loader(&self_exe),
         Commands::Prompt => {
             let config = load_config(false);
+            let thin_separator_fg = config.theme.thin_separator_fg;
             let segments = load_segments(config)?;
 
             let mut it = segments.into_iter().peekable();
 
             while let Some(seg) = it.next() {
+                let separator_fg = match seg.separator {
+                    Separator::Thick => seg.bg.set_fg(),
+                    Separator::Thin => thin_separator_fg.set_fg(),
+                };
+
                 let separator_bg = if let Some(next_seg) = it.peek() {
                     next_seg.bg.set_bg()
                 } else {
@@ -183,7 +189,7 @@ fn main() -> Result<()> {
                     seg.bg.set_bg(),
                     seg.text,
                     separator_bg,
-                    seg.bg.set_fg(),
+                    separator_fg,
                     seg.separator
                 );
             }
