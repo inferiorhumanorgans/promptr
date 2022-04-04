@@ -22,6 +22,9 @@ pub struct Args {
 
     /// Whether or not to show a path segment for the root directory
     pub show_root: bool,
+
+    /// Add a leading segment if there's more than one directory in the [stack](https://www.gnu.org/software/bash/manual/html_node/The-Directory-Stack.html)
+    pub show_dir_stack: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -35,21 +38,8 @@ pub struct Theme {
 
     pub last_fg: Color,
     pub last_bg: Color,
-}
 
-impl Default for Theme {
-    fn default() -> Self {
-        Self {
-            fg: Color::Numbered(250),
-            bg: Color::Numbered(237),
-
-            home_fg: Color::Numbered(15),
-            home_bg: Color::Numbered(31),
-
-            last_fg: Color::Numbered(254),
-            last_bg: Color::Numbered(237),
-        }
-    }
+    pub dir_stack_indicator: String,
 }
 
 impl Default for Args {
@@ -57,6 +47,7 @@ impl Default for Args {
         Self {
             home_dir_replacement: Paths::HOME_SHORTENED.into(),
             show_root: false,
+            show_dir_stack: true,
         }
     }
 }
@@ -84,7 +75,7 @@ impl ToSegment for Paths {
             .replace(path.as_ref(), Self::HOME_SHORTENED)
             .into();
         let path = std::path::PathBuf::from_str(path.as_str()).unwrap();
-        let segments = path
+        let mut segments : Vec<Segment> = path
             .components()
             .with_position()
             .filter_map(|component| match component {
@@ -154,6 +145,42 @@ impl ToSegment for Paths {
                 _ => None,
             })
             .collect();
+
+        if args.show_dir_stack == true {
+            if let Ok(dirs) = env::var("dirs") {
+                let dir_stack_depth = dirs.split("\n").collect::<Vec<_>>().len();
+                if dir_stack_depth > 1 {
+                    segments.insert(
+                        0,
+                        Segment {
+                            fg: theme.fg,
+                            bg: theme.bg,
+                            separator: Separator::Thick,
+                            text: format!("{} {}", dir_stack_depth, theme.dir_stack_indicator),
+                            source: "Paths::BashDirStack",
+                        }
+                    );
+                }
+            }
+        }
+
         Ok(segments)
+    }
+}
+
+impl Default for Theme {
+    fn default() -> Self {
+        Self {
+            fg: Color::Numbered(250),
+            bg: Color::Numbered(237),
+
+            home_fg: Color::Numbered(15),
+            home_bg: Color::Numbered(31),
+
+            last_fg: Color::Numbered(254),
+            last_bg: Color::Numbered(237),
+
+            dir_stack_indicator: "\u{1f4da}".into(),
+        }
     }
 }
