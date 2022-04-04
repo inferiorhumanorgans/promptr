@@ -42,7 +42,7 @@ impl ToSegment for Username {
     ) -> crate::Result<Vec<Segment>> {
         let theme = &state.theme.username;
 
-        let text = env::var("USER").expect("Couldn't determine username");
+        let text = env::var("USER")?;
 
         Ok(vec![Segment {
             fg: theme.fg,
