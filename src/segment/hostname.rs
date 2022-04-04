@@ -49,7 +49,7 @@ impl Default for Args {
     fn default() -> Self {
         Self { 
             show_domain: false,
-            show_jail_indicator: false,
+            show_jail_indicator: true,
             show_os_indicator: false,
         }
     }
@@ -109,10 +109,12 @@ impl ToSegment for Hostname {
         }
 
         #[cfg(target_family = "unix")]
-        if let Ok(ctl) = Ctl::new("security.jail.jailed") {
-            if let Ok(sysctl::CtlValue::Int(jailed)) = ctl.value() {
-                if jailed == 1 {
-                    hostname.push(theme.jail_indicator.to_string());
+        if args.show_jail_indicator == true {
+            if let Ok(ctl) = Ctl::new("security.jail.jailed") {
+                if let Ok(sysctl::CtlValue::Int(jailed)) = ctl.value() {
+                    if jailed == 1 {
+                        hostname.push(theme.jail_indicator.to_string());
+                    }
                 }
             }
         }
