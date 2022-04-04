@@ -2,6 +2,7 @@
 
 use std::env;
 
+use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
 use sysctl::{Ctl, Sysctl};
 
@@ -14,7 +15,8 @@ pub struct Hostname {}
 #[derive(Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Args {
-    pub hide_domain: bool,
+    pub show_domain: bool,
+    pub show_jail_indicator: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -22,11 +24,15 @@ pub struct Args {
 pub struct Theme {
     pub fg: Color,
     pub bg: Color,
+    pub jail_indicator: String,
 }
 
 impl Default for Args {
     fn default() -> Self {
-        Self { hide_domain: true }
+        Self { 
+            show_domain: false,
+            show_jail_indicator: false,
+        }
     }
 }
 
@@ -35,6 +41,7 @@ impl Default for Theme {
         Self {
             fg: Color::Numbered(250),
             bg: Color::Numbered(238),
+            jail_indicator: "🔐".into(),
         }
     }
 }
@@ -49,24 +56,25 @@ impl ToSegment for Hostname {
     ) -> crate::Result<Vec<Segment>> {
         let args = args.unwrap_or_default();
 
-        let Theme { fg, bg } = state.theme.hostname;
+        let Theme { fg, bg, .. } = state.theme.hostname;
 
-        let hostname = env::var("hostname").expect("Hostname not set, check init");
-        let hostname = match args.hide_domain {
-            false => hostname,
-            true => hostname
+        let hostname = env::var("hostname").map_err(|_| anyhow!("Hostname not set, check init"))?;
+        let hostname = match args.show_domain {
+            true => hostname,
+            false => hostname
                 .split('.')
                 .next()
                 .expect("Couldn't determine hostname")
                 .to_string(),
         };
 
-        let mut jail_suffix = "";
+        let mut jail_suffix = String::new();
 
+        #[cfg(target_family = "unix")]
         if let Ok(ctl) = Ctl::new("security.jail.jailed") {
             if let Ok(sysctl::CtlValue::Int(jailed)) = ctl.value() {
                 if jailed == 1 {
-                    jail_suffix = "👮";
+                    jail_suffix = state.theme.hostname.jail_indicator.clone();
                 }
             }
         }
