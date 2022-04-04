@@ -92,9 +92,15 @@ pub struct Theme {
     #[cfg(feature = "segment-git")]
     pub vcs: segment::vcs::Theme,
 
+    /// Theme for the [`username`](`segment::username`) segment.
     pub username: segment::username::Theme,
 
+    /// Theme for the [`paths`](`segment::paths`) segment.
     pub paths: segment::paths::Theme,
+
+    /// Theme for the [`rvm`](`segment::rvm`) segment.
+    #[cfg(feature = "segment-rvm")]
+    pub rvm: segment::rvm::Theme,
 
     pub thin_separator_fg: ansi::Color,
 }
@@ -153,6 +159,7 @@ impl Default for Theme {
             vcs: Default::default(),
             username: Default::default(),
             paths: Default::default(),
+            rvm: Default::default(),
             thin_separator_fg: ansi::Color::Numbered(244),
         }
     }

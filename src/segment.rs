@@ -67,6 +67,9 @@ pub mod hostname;
 
 pub mod paths;
 
+#[cfg(feature = "segment-rvm")]
+pub mod rvm;
+
 pub mod username;
 
 pub mod vcs;
@@ -82,5 +85,8 @@ pub use git::Git;
 pub use self::hostname::Hostname;
 
 pub use paths::Paths;
+
+#[cfg(feature = "segment-rvm")]
+pub use rvm::Rvm;
 
 pub use username::Username;

@@ -15,6 +15,7 @@ git2 = { version = "0.14", optional = true }
 indoc = "1.0"
 itertools = "0.10"
 regex = "1"
+semver = { version = "1.0.7", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
@@ -22,9 +23,10 @@ serde_json = "1.0"
 sysctl = "0.4.4"
 
 [features]
-default = [ "segment-battery", "segment-git" ]
+default = [ "segment-battery", "segment-git", "segment-rvm" ]
 segment-battery = [ "battery" ]
 segment-git = [ "git2" ]
+segment-rvm = [ "semver" ]
 
 [profile.release]
 lto = "thin"

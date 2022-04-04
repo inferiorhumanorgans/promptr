@@ -98,7 +98,7 @@ impl Default for Theme {
 
             git_stashed_fg: Color::Numbered(0),
             git_stashed_bg: Color::Numbered(221),
-        
+
             repo_clean_fg: Color::Numbered(0),
             repo_clean_bg: Color::Numbered(148),
 
