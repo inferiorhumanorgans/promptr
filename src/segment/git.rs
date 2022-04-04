@@ -55,7 +55,10 @@ fn seg_ahead_behind(
         Err(_) => return,
     };
     let head_name = head.shorthand().unwrap();
-    let head_branch = repo.find_branch(head_name, BranchType::Local).unwrap();
+    let head_branch = match repo.find_branch(head_name, BranchType::Local) {
+        Ok(head_branch) => head_branch,
+        Err(_) => return, // Likely a detached head.  Rebase?
+    };
     let head_oid = head.target().unwrap();
     let upstream_branch = match head_branch.upstream() {
         Ok(upstream) => upstream,
