@@ -47,12 +47,14 @@ impl Shell {
                         if [[ $- == *i* ]]; then
                             promptr_conf_dir=$({promptr} location)
                             promptr_conf_file="${{promptr_conf_dir}}/promptr.json"
+
                             if [ ! -d "${{promptr_conf_dir}}" ]; then
                                 echo "Creating default configuration directory"
                                 mkdir "${{promptr_conf_dir}}"
                             fi
+
                             if [ ! -f "${{promptr_conf_file}}" ]; then
-                                echo "Preserving default configuration at ${{promptr_conf_file}}"
+                                echo "Saving default configuration to ${{promptr_conf_file}}"
                                 {promptr} current-config > "${{promptr_conf_file}}"
                             else
                                 echo "Found an existing configuration at ${{promptr_conf_file}}"
