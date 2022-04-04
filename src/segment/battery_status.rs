@@ -3,8 +3,9 @@ use anyhow::anyhow;
 use battery::State as BatteryState;
 use serde::{Deserialize, Serialize};
 
+use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
-use crate::{ApplicationState, Color, Separator};
+use crate::{ApplicationState, Separator};
 
 pub struct BatteryStatus {}
 

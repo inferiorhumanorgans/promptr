@@ -14,7 +14,8 @@
 
 use serde::Deserialize;
 
-use crate::{ApplicationState, Color, Separator};
+use crate::ansi::Color;
+use crate::{ApplicationState, Separator};
 
 /// Represents a rendered segment
 #[derive(Debug)]
@@ -33,12 +34,25 @@ pub struct Segment {
 
 /// Implement this trait for each potential segment.  It's generic over the `Deserialize` trait
 /// so that each segment can have strongly typed arguments loaded from the configuration file.
-pub trait ToSegment {
-    type Args: Deserialize<'static>;
-    type Theme: Deserialize<'static>;
+pub trait ToSegment{
+    type Args;
+    type Theme;
 
-    fn to_segment(arg: Option<Self::Args>, state: &ApplicationState)
+    fn to_segment(args: Option<Self::Args>, state: &ApplicationState)
         -> crate::Result<Vec<Segment>>;
+
+    /// Default impl to let us take in an untyped [`Value`](`serde_json::Value`)
+    fn to_segment_generic(json: Option<serde_json::Value>, state: &ApplicationState) -> crate::Result<Vec<Segment>> where for<'de> <Self as ToSegment>::Args: Deserialize<'de> {
+        let args = match json {
+            Some(json) => {
+                let args : Self::Args = serde_json::from_value(json)?;
+                Some(args)
+            },
+            None => None,
+        };
+
+        Self::to_segment(args, state)
+    }
 }
 
 #[cfg(feature = "segment-battery")]
@@ -58,15 +72,15 @@ pub mod username;
 pub mod vcs;
 
 #[cfg(feature = "segment-battery")]
-pub(super) use battery_status::BatteryStatus;
+pub use battery_status::BatteryStatus;
 
-pub(super) use command_status::CommandStatus;
+pub use command_status::CommandStatus;
 
 #[cfg(feature = "segment-git")]
-pub(super) use git::Git;
+pub use git::Git;
 
-pub(super) use self::hostname::Hostname;
+pub use self::hostname::Hostname;
 
-pub(super) use paths::Paths;
+pub use paths::Paths;
 
-pub(super) use username::Username;
+pub use username::Username;

@@ -5,8 +5,9 @@ use std::env;
 use serde::{Deserialize, Serialize};
 use sysctl::{Ctl, Sysctl};
 
+use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
-use crate::{ApplicationState, Color, Separator};
+use crate::{ApplicationState, Separator};
 
 pub struct Hostname {}
 
@@ -47,6 +48,7 @@ impl ToSegment for Hostname {
         state: &ApplicationState,
     ) -> crate::Result<Vec<Segment>> {
         let args = args.unwrap_or_default();
+
         let Theme { fg, bg } = state.theme.hostname;
 
         let hostname = env::var("hostname").expect("Hostname not set, check init");

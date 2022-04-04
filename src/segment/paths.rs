@@ -7,8 +7,9 @@ use itertools::{Itertools, Position};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
+use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
-use crate::{ApplicationState, Color, Separator};
+use crate::{ApplicationState, Separator};
 
 pub struct Paths {}
 
@@ -73,6 +74,7 @@ impl ToSegment for Paths {
         state: &ApplicationState,
     ) -> crate::Result<Vec<Segment>> {
         let args = args.unwrap_or_default();
+
         let theme = &state.theme.paths;
 
         let path = env::var("PWD")?;
