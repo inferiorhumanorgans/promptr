@@ -78,17 +78,21 @@ impl ToSegment for BatteryStatus {
                 ),
                 source: "BatteryStatus::Charging",
             },
-            BatteryState::Discharging | BatteryState::Unknown if battery.state_of_charge().value < 50.0 => Segment {
-                fg: theme.low_fg,
-                bg: theme.low_bg,
-                separator: Separator::Thick,
-                text: format!(
-                    "{:.0}%{}",
-                    battery.state_of_charge().value * 100.0,
-                    args.discharging_symbol
-                ),
-                source: "BatteryStatus::Discharging/Unknown",
-            },
+            BatteryState::Discharging | BatteryState::Unknown
+                if battery.state_of_charge().value < 50.0 =>
+            {
+                Segment {
+                    fg: theme.low_fg,
+                    bg: theme.low_bg,
+                    separator: Separator::Thick,
+                    text: format!(
+                        "{:.0}%{}",
+                        battery.state_of_charge().value * 100.0,
+                        args.discharging_symbol
+                    ),
+                    source: "BatteryStatus::Discharging/Unknown",
+                }
+            }
             BatteryState::Discharging | BatteryState::Unknown => Segment {
                 fg: theme.normal_fg,
                 bg: theme.normal_bg,

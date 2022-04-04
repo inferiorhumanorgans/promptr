@@ -1,9 +1,9 @@
 //! `libpromptr` is part of `promptr`, a fancy `bash` prompt generator
-//! 
+//!
 //! This library handles all of the configuration parsing and most of the display logic.  For
 //! information about what to place in your configuration files this is the place.  For usage
 //! and installation information check the `promptr` documentation.
- 
+
 use serde::{Deserialize, Serialize};
 
 use std::fmt::{self, Display};

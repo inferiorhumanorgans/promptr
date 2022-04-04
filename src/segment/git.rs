@@ -27,7 +27,7 @@ pub struct Args {
 
     /// Whether to show a segment when there's an in-progress operation.  More granular options are below.
     pub show_in_progress: bool,
-    
+
     /// Show a segment if we're bisecting.
     pub show_bisect: bool,
 
@@ -59,64 +59,50 @@ struct Stats {
     pub stashed: usize,
 }
 
-fn seg_in_progress(
-    repo: &Repository,
-    args: &Args,
-    theme: &VcsTheme,
-    segments: &mut Vec<Segment>,
-) {
+fn seg_in_progress(repo: &Repository, args: &Args, theme: &VcsTheme, segments: &mut Vec<Segment>) {
     if args.show_in_progress != true {
-        return
+        return;
     }
 
     match repo.state() {
-        RepositoryState::Bisect if args.show_bisect == true =>  {
-            segments.push(
-                Segment {
-                    fg: theme.git_in_progress_fg,
-                    bg: theme.git_in_progress_bg,
-                    separator: Separator::Thick,
-                    text: "bisect".to_string(),
-                    source: "Git::Bisect",
-                }
-            )
-        },
-        RepositoryState::CherryPick |
-        RepositoryState::CherryPickSequence if args.show_cherry_pick == true =>  {
-            segments.push(
-                Segment {
-                    fg: theme.git_in_progress_fg,
-                    bg: theme.git_in_progress_bg,
-                    separator: Separator::Thick,
-                    text: "🍒".to_string(),
-                    source: "Git::CherryPick",
-                }
-            )
-        },
-        RepositoryState::Merge if args.show_merge == true =>  {
-            segments.push(
-                Segment {
-                    fg: theme.git_in_progress_fg,
-                    bg: theme.git_in_progress_bg,
-                    separator: Separator::Thick,
-                    text: "merge".to_string(),
-                    source: "Git::Merge",
-                }
-            )
-        },
-        RepositoryState::Rebase |
-        RepositoryState::RebaseInteractive |
-        RepositoryState::RebaseMerge if args.show_rebase == true =>  {
-            segments.push(
-                Segment {
-                    fg: theme.git_in_progress_fg,
-                    bg: theme.git_in_progress_bg,
-                    separator: Separator::Thick,
-                    text: "rebase".to_string(),
-                    source: "Git::Rebase",
-                }
-            )
-        },
+        RepositoryState::Bisect if args.show_bisect == true => segments.push(Segment {
+            fg: theme.git_in_progress_fg,
+            bg: theme.git_in_progress_bg,
+            separator: Separator::Thick,
+            text: "bisect".to_string(),
+            source: "Git::Bisect",
+        }),
+        RepositoryState::CherryPick | RepositoryState::CherryPickSequence
+            if args.show_cherry_pick == true =>
+        {
+            segments.push(Segment {
+                fg: theme.git_in_progress_fg,
+                bg: theme.git_in_progress_bg,
+                separator: Separator::Thick,
+                text: "🍒".to_string(),
+                source: "Git::CherryPick",
+            })
+        }
+        RepositoryState::Merge if args.show_merge == true => segments.push(Segment {
+            fg: theme.git_in_progress_fg,
+            bg: theme.git_in_progress_bg,
+            separator: Separator::Thick,
+            text: "merge".to_string(),
+            source: "Git::Merge",
+        }),
+        RepositoryState::Rebase
+        | RepositoryState::RebaseInteractive
+        | RepositoryState::RebaseMerge
+            if args.show_rebase == true =>
+        {
+            segments.push(Segment {
+                fg: theme.git_in_progress_fg,
+                bg: theme.git_in_progress_bg,
+                separator: Separator::Thick,
+                text: "rebase".to_string(),
+                source: "Git::Rebase",
+            })
+        }
         _ => {}
     }
 }
@@ -234,15 +220,13 @@ fn seg_stashed(
     segments: &mut Vec<Segment>,
 ) {
     if stats.stashed > 0 && args.show_stash == true {
-        segments.push(
-            Segment {
-                fg: theme.git_stashed_fg,
-                bg: theme.git_stashed_bg,
-                separator: Separator::Thick,
-                text: format!("{}{}", stats.stashed, theme.symbols.stash),
-                source: "Git::Stashed",
-            }
-        )
+        segments.push(Segment {
+            fg: theme.git_stashed_fg,
+            bg: theme.git_stashed_bg,
+            separator: Separator::Thick,
+            text: format!("{}{}", stats.stashed, theme.symbols.stash),
+            source: "Git::Stashed",
+        })
     }
 }
 

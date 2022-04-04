@@ -47,7 +47,7 @@ pub struct Theme {
 
 impl Default for Args {
     fn default() -> Self {
-        Self { 
+        Self {
             show_domain: false,
             show_jail_indicator: true,
             show_os_indicator: false,
@@ -92,9 +92,7 @@ impl ToSegment for Hostname {
                 .to_string(),
         };
 
-        let mut hostname = vec![
-            hostname,
-        ];
+        let mut hostname = vec![hostname];
 
         if args.show_os_indicator == true {
             if cfg!(target_os = "macos") {
@@ -119,14 +117,12 @@ impl ToSegment for Hostname {
             }
         }
 
-        Ok(vec![
-            Segment {
-                bg,
-                fg,
-                separator: Separator::Thick,
-                text: hostname.join(""),
-                source: "Hostname",
-            }
-        ])
+        Ok(vec![Segment {
+            bg,
+            fg,
+            separator: Separator::Thick,
+            text: hostname.join(""),
+            source: "Hostname",
+        }])
     }
 }

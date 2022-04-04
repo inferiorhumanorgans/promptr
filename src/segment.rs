@@ -34,20 +34,28 @@ pub struct Segment {
 
 /// Implement this trait for each potential segment.  It's generic over the `Deserialize` trait
 /// so that each segment can have strongly typed arguments loaded from the configuration file.
-pub trait ToSegment{
+pub trait ToSegment {
     type Args;
     type Theme;
 
-    fn to_segment(args: Option<Self::Args>, state: &ApplicationState)
-        -> crate::Result<Vec<Segment>>;
+    fn to_segment(
+        args: Option<Self::Args>,
+        state: &ApplicationState,
+    ) -> crate::Result<Vec<Segment>>;
 
     /// Default impl to let us take in an untyped [`Value`](`serde_json::Value`)
-    fn to_segment_generic(json: Option<serde_json::Value>, state: &ApplicationState) -> crate::Result<Vec<Segment>> where for<'de> <Self as ToSegment>::Args: Deserialize<'de> {
+    fn to_segment_generic(
+        json: Option<serde_json::Value>,
+        state: &ApplicationState,
+    ) -> crate::Result<Vec<Segment>>
+    where
+        for<'de> <Self as ToSegment>::Args: Deserialize<'de>,
+    {
         let args = match json {
             Some(json) => {
-                let args : Self::Args = serde_json::from_value(json)?;
+                let args: Self::Args = serde_json::from_value(json)?;
                 Some(args)
-            },
+            }
             None => None,
         };
 
