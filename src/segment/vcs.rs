@@ -40,6 +40,9 @@ pub struct Theme {
     pub git_conflict_fg: Color,
     pub git_conflict_bg: Color,
 
+    pub git_stashed_fg: Color,
+    pub git_stashed_bg: Color,
+
     pub repo_clean_fg: Color,
     pub repo_clean_bg: Color,
 
@@ -87,6 +90,9 @@ impl Default for Theme {
             git_conflict_fg: Color::Numbered(15),
             git_conflict_bg: Color::Numbered(9),
 
+            git_stashed_fg: Color::Numbered(0),
+            git_stashed_bg: Color::Numbered(221),
+        
             repo_clean_fg: Color::Numbered(0),
             repo_clean_bg: Color::Numbered(148),
 

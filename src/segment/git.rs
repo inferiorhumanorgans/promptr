@@ -15,7 +15,16 @@ pub struct Git {}
 /// **TODO** make a variety of things configurable here including which segments to display.
 #[derive(Deserialize)]
 #[serde(default, deny_unknown_fields)]
-pub struct Args {}
+pub struct Args {
+    /// Show the git badge before the branch.  The badge itself can be configured via the
+    /// [`vcs::Symbols`](`crate::segment::vcs::Symbols`) config object.
+    ///
+    /// **TODO** implement badges for well known remotes (e.g. GitHub, Bitbucket)
+    pub show_vcs_badge: bool,
+
+    /// Show count of stashed objects after the untracked badge.
+    pub show_stash_segment: bool,
+}
 
 /// High level statistics for the current git repo
 struct Stats {
@@ -23,6 +32,7 @@ struct Stats {
     pub conflicted: usize,
     pub staged: usize,
     pub untracked: usize,
+    pub stashed: usize,
 }
 
 fn seg_ahead_behind(
@@ -127,6 +137,26 @@ fn seg_staged(
     }
 }
 
+fn seg_stashed(
+    _repo: &Repository,
+    stats: &Stats,
+    args: &Args,
+    theme: &VcsTheme,
+    segments: &mut Vec<Segment>,
+) {
+    if stats.stashed > 0 && args.show_stash_segment == true {
+        segments.push(
+            Segment {
+                fg: theme.git_stashed_fg,
+                bg: theme.git_stashed_bg,
+                separator: Separator::Thick,
+                text: format!("{}{}", stats.stashed, theme.symbols.stash),
+                source: "Git::Stashed",
+            }
+        )
+    }
+}
+
 fn seg_current_branch(
     repo: &Repository,
     stats: &Stats,
@@ -164,6 +194,8 @@ fn seg_current_branch(
 impl Default for Args {
     fn default() -> Self {
         Self {
+            show_vcs_badge: true,
+            show_stash_segment: true,
         }
     }
 }
@@ -187,7 +219,14 @@ impl ToSegment for Git {
     ) -> crate::Result<Vec<Segment>> {
         let args = args.unwrap_or_default();
 
-        let repo = Repository::open(".")?;
+        let mut repo = Repository::open(".")?;
+
+        // Meh
+        let mut stashed = 0;
+        repo.stash_foreach(|_, _, _| {
+            stashed += 1;
+            true
+        })?;
 
         let mut segments = vec![];
 
@@ -238,6 +277,7 @@ impl ToSegment for Git {
             conflicted,
             staged,
             untracked,
+            stashed,
         };
 
         seg_current_branch(&repo, &stats, &args, &state.theme.vcs, &mut segments);
@@ -245,6 +285,7 @@ impl ToSegment for Git {
         seg_staged(&repo, &stats, &args, &state.theme.vcs, &mut segments);
         seg_changed(&repo, &stats, &args, &state.theme.vcs, &mut segments);
         seg_untracked(&repo, &stats, &args, &state.theme.vcs, &mut segments);
+        seg_stashed(&repo, &stats, &args, &state.theme.vcs, &mut segments);
 
         Ok(segments)
     }
