@@ -15,6 +15,13 @@ pub enum Shell {
 }
 
 impl Shell {
+    /// Variables we want to capture from `bash`, some are computed and some are not exported
+    ///
+    /// Note: `wc` is not a builtin so we're probably better off splitting the string rust-side.
+    ///
+    /// Note: `dirs -p` prints each item on the stack on a separate line, sidestepping the paths with spaces issue
+    const CAPTURE_VARS : &'static str = "hostname=$HOSTNAME code=$? dirs=$(dirs -p) jobs=$(jobs -p | wc -l)";
+
     /// Returns an [`anyhow::Result`] with the invoking shell or an error if the shell cannot be identified.
     pub fn get_current_shell() -> Result<Self> {
         let shell: String = env::var("PROMPTR_SHELL")
@@ -65,13 +72,14 @@ impl Shell {
 
                             PROMPT_COMMAND=promptr_prompt
                             promptr_prompt() {{
-                                PS1="$(hostname=$HOSTNAME code=$? jobs=$(jobs -p | wc -l) {promptr} prompt)"
+                                PS1="$({capture_vars} {promptr} prompt)"
                             }}
                         else
                             echo "*** promptr must be run from an interactive shell ***"
                         fi
                     "##
                     ),
+                    capture_vars = Self::CAPTURE_VARS,
                     promptr = self_exe,
                 )
             }
@@ -97,11 +105,12 @@ impl Shell {
 
                             PROMPT_COMMAND=promptr_prompt
                             promptr_prompt() {{
-                                PS1="$(hostname=$HOSTNAME code=$? jobs=$(jobs -p | wc -l) {promptr} prompt)"
+                                PS1="$({capture_vars} {promptr} prompt)"
                             }}
                         fi
                     "##
                     ),
+                    capture_vars = Self::CAPTURE_VARS,
                     promptr = self_exe,
                 )
             }
