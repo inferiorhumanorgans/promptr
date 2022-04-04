@@ -173,7 +173,14 @@ fn main() -> Result<()> {
             let mut it = segments.into_iter().peekable();
 
             while let Some(seg) = it.next() {
-                let separator_fg = match seg.separator {
+                let mut separator = seg.separator;
+                if let Some(next_seg) = it.peek() {
+                    if seg.bg == next_seg.bg {
+                        separator = Separator::Thin;
+                    }
+                }
+
+                let separator_fg = match separator {
                     Separator::Thick => seg.bg.set_fg(),
                     Separator::Thin => thin_separator_fg.set_fg(),
                 };
@@ -191,7 +198,7 @@ fn main() -> Result<()> {
                     seg.text,
                     separator_bg,
                     separator_fg,
-                    seg.separator
+                    separator
                 );
             }
 
