@@ -6,20 +6,21 @@ In true not-invented-here fashion every powerline-esque prompt prettifier I trie
 
 The goal with `promptr` is to create a fancy prompt tool that has a somewhat narrow scope, sensible defaults, actionable error messages, reasonable documentation, is fast, fail-safe (who wants their prompt to disappear completely?), and easily configurable.
 
-To that end currently the only shell that's supported is [bash](https://www.gnu.org/software/bash/), and only on non-Windows platforms.
+To that end currently the only shell that's supported for now is [bash](https://www.gnu.org/software/bash/), and only on non-Windows platforms.
 
-Wait.  What's powerline?  A discussion for another time…
+Wait.  What's [powerline](https://github.com/powerline/powerline)?  A discussion for another time…
 
 ## Installation
 
-`promptr` is written in Rust.  Until precompiled binaries are available a full-blown [Rust build environment](https://rustup.rs/) is required.  `promptr` is mostly tested against the nightly toolchain but should compile with stable as well.  No minimum supported Rust version has been determined although it's probably in the 1.40s.
+`promptr` is written in Rust.  Until precompiled binaries are available, a full-blown [Rust build environment](https://rustup.rs/) is required.  `promptr` is mostly tested against the nightly toolchain but *should* compile with stable as well.  No minimum supported Rust version has been determined although it's probably in the 1.40s.
 
 ### Features
 
 For those looking to slim things down a bit, the following segments can be disabled by disabling their respective [feature](https://doc.rust-lang.org/cargo/reference/features.html):
 
-* git -> `segment-git`
 * battery -> `segment-battery`
+* git -> `segment-git`
+* rvm -> `segment-rvm`
 
 ### Compilation
 
@@ -47,7 +48,7 @@ source <(promptr init)>
 
 `promptr init` will ensure that the configuration directory exists and if no configuration file exists the default configuration will be written to disk.
 
-To persist this across every invocation add that to your `.bash_profile`, `.profile`, or `.bashrc` as appropriate.  Which file your instance of `bash` will load depends on your operating system and local configuration.  If you would like a quieter startup experience place this in your `bash` file instead:
+To persist this across every invocation add that to your `.bash_profile`, `.profile`, or `.bashrc` as appropriate.  Which file your instance of `bash` will load depends on your operating system and local configuration.  If you would like a quieter startup experience place this in your `bash` configuration file instead:
 
 ```bash
 source <(promptr load)>
@@ -117,3 +118,13 @@ jqi  '.theme.vcs.symbols.git = ""' "$(promptr location)/promptr.json"
 ## TODO
 
 * `promptr explain` to show the documentation for a segment on the command line
+
+* `screen` segment to show if we're running under a screen (show screen name/pid, window #, tv emoji). Note sudo will clobber most of the screen env vars so we can't rely on detailed info (e.g. screen name, window number) but since `TERM` is (almost?) always preserved and set to `screen` or `screen-foo` we can at least do a quick boolean check.
+
+* `ssh` segment (badge on hostname seg?), walk the process tree and see if it ends with sshd. Note: screen appears to save the SSH env vars when you create a new screen so that's not 100% reliable.
+
+* `paths` segment: make the number of segments rendered configurable
+
+* format the segment impls alphabetically
+
+* move all the icon/indicator knobs into theme objects
