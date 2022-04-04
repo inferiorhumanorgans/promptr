@@ -1,4 +1,13 @@
 //! The `Git` segment displays information about a git repository
+//!
+//! This module provides the following segments that can be configured from the [`Args`] struct:
+//! * branch
+//! * ahead / behind remote
+//! * staged items count
+//! * modified items count
+//! * untracked items count
+//! * in-progress action (e.g. rebase, merge, cherry pick)
+//! * stash count
 
 use anyhow::anyhow;
 use git2::{BranchType, ErrorCode, Repository, RepositoryState, StatusOptions};
