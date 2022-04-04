@@ -28,10 +28,19 @@ pub struct Args {
 
 /// High level statistics for the current git repo
 struct Stats {
+    /// Number of files with unstaged changes
     pub changed: usize,
+
+    /// Number of files with conflicts
     pub conflicted: usize,
+
+    /// Number of files staged for commit
     pub staged: usize,
+
+    /// Number of untracked files
     pub untracked: usize,
+
+    /// Number of stashes on the current repo
     pub stashed: usize,
 }
 

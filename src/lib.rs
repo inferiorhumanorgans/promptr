@@ -12,6 +12,7 @@ pub mod ansi;
 pub mod segment;
 pub mod shell;
 
+/// Result that takes an [`anyhow::Error`]
 pub use anyhow::Result;
 
 /// Global application state.  Includes information that we've captured from the shell and theme
