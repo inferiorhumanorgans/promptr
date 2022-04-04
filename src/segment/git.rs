@@ -161,6 +161,13 @@ fn seg_current_branch(
     });
 }
 
+impl Default for Args {
+    fn default() -> Self {
+        Self {
+        }
+    }
+}
+
 impl Stats {
     /// Returns true if there are local modifications, conflicts, staged, or new files
     pub fn dirty(&self) -> bool {
