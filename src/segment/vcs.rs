@@ -40,6 +40,9 @@ pub struct Theme {
     pub git_conflict_fg: Color,
     pub git_conflict_bg: Color,
 
+    pub git_in_progress_fg: Color,
+    pub git_in_progress_bg: Color,
+
     pub git_stashed_fg: Color,
     pub git_stashed_bg: Color,
 
@@ -89,6 +92,9 @@ impl Default for Theme {
 
             git_conflict_fg: Color::Numbered(15),
             git_conflict_bg: Color::Numbered(9),
+
+            git_in_progress_fg: Color::Numbered(15),
+            git_in_progress_bg: Color::Numbered(208),
 
             git_stashed_fg: Color::Numbered(0),
             git_stashed_bg: Color::Numbered(221),

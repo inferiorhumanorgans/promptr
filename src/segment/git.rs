@@ -1,7 +1,7 @@
 //! The `Git` segment displays information about a git repository
 
 use anyhow::anyhow;
-use git2::{BranchType, ErrorCode, Repository, StatusOptions};
+use git2::{BranchType, ErrorCode, Repository, RepositoryState, StatusOptions};
 use serde::Deserialize;
 
 use crate::segment::vcs::Theme as VcsTheme;
@@ -23,7 +23,22 @@ pub struct Args {
     pub show_vcs_badge: bool,
 
     /// Show count of stashed objects after the untracked badge.
-    pub show_stash_segment: bool,
+    pub show_stash: bool,
+
+    /// Whether to show a segment when there's an in-progress operation.  More granular options are below.
+    pub show_in_progress: bool,
+    
+    /// Show a segment if we're bisecting.
+    pub show_bisect: bool,
+
+    /// Show a segment if we're picking cherries.
+    pub show_cherry_pick: bool,
+
+    /// Show a segment if we're mid-merge.
+    pub show_merge: bool,
+
+    /// Show a segment if we're in the middle of a rebase.
+    pub show_rebase: bool,
 }
 
 /// High level statistics for the current git repo
@@ -42,6 +57,68 @@ struct Stats {
 
     /// Number of stashes on the current repo
     pub stashed: usize,
+}
+
+fn seg_in_progress(
+    repo: &Repository,
+    args: &Args,
+    theme: &VcsTheme,
+    segments: &mut Vec<Segment>,
+) {
+    if args.show_in_progress != true {
+        return
+    }
+
+    match repo.state() {
+        RepositoryState::Bisect if args.show_bisect == true =>  {
+            segments.push(
+                Segment {
+                    fg: theme.git_in_progress_fg,
+                    bg: theme.git_in_progress_bg,
+                    separator: Separator::Thick,
+                    text: "bisect".to_string(),
+                    source: "Git::Bisect",
+                }
+            )
+        },
+        RepositoryState::CherryPick |
+        RepositoryState::CherryPickSequence if args.show_cherry_pick == true =>  {
+            segments.push(
+                Segment {
+                    fg: theme.git_in_progress_fg,
+                    bg: theme.git_in_progress_bg,
+                    separator: Separator::Thick,
+                    text: "🍒".to_string(),
+                    source: "Git::CherryPick",
+                }
+            )
+        },
+        RepositoryState::Merge if args.show_merge == true =>  {
+            segments.push(
+                Segment {
+                    fg: theme.git_in_progress_fg,
+                    bg: theme.git_in_progress_bg,
+                    separator: Separator::Thick,
+                    text: "merge".to_string(),
+                    source: "Git::Merge",
+                }
+            )
+        },
+        RepositoryState::Rebase |
+        RepositoryState::RebaseInteractive |
+        RepositoryState::RebaseMerge if args.show_rebase == true =>  {
+            segments.push(
+                Segment {
+                    fg: theme.git_in_progress_fg,
+                    bg: theme.git_in_progress_bg,
+                    separator: Separator::Thick,
+                    text: "rebase".to_string(),
+                    source: "Git::Rebase",
+                }
+            )
+        },
+        _ => {}
+    }
 }
 
 fn seg_ahead_behind(
@@ -156,7 +233,7 @@ fn seg_stashed(
     theme: &VcsTheme,
     segments: &mut Vec<Segment>,
 ) {
-    if stats.stashed > 0 && args.show_stash_segment == true {
+    if stats.stashed > 0 && args.show_stash == true {
         segments.push(
             Segment {
                 fg: theme.git_stashed_fg,
@@ -207,7 +284,12 @@ impl Default for Args {
     fn default() -> Self {
         Self {
             show_vcs_badge: true,
-            show_stash_segment: true,
+            show_stash: true,
+            show_in_progress: true,
+            show_bisect: true,
+            show_cherry_pick: true,
+            show_merge: true,
+            show_rebase: true,
         }
     }
 }
@@ -294,6 +376,7 @@ impl ToSegment for Git {
 
         seg_current_branch(&repo, &stats, &args, &state.theme.vcs, &mut segments);
         seg_ahead_behind(&repo, &args, &state.theme.vcs, &mut segments);
+        seg_in_progress(&repo, &args, &state.theme.vcs, &mut segments);
         seg_staged(&repo, &stats, &args, &state.theme.vcs, &mut segments);
         seg_changed(&repo, &stats, &args, &state.theme.vcs, &mut segments);
         seg_untracked(&repo, &stats, &args, &state.theme.vcs, &mut segments);
