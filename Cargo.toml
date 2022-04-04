@@ -2,6 +2,9 @@
 name = "promptr"
 version = "0.1.0"
 edition = "2021"
+description = "Powerful command prompt generator for bash"
+repository = "https://github.com/inferiorhumanorgans/promptr"
+license = "GPL-3.0-or-later"
 
 [lib]
 name = "libpromptr"
