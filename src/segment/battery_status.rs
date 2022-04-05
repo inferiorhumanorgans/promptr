@@ -9,9 +9,13 @@ use crate::{ApplicationState, Separator};
 
 pub struct BatteryStatus {}
 
-#[derive(Default, Deserialize)]
+/// Arguments for the [`BatteryStatus`] segment
+#[derive(Deserialize)]
 #[serde(default, deny_unknown_fields)]
-pub struct Args {}
+pub struct Args {
+    /// If state of charge is less than this value, switch to the warning colors
+    pub low_battery_threshold: f32,
+}
 
 /// Theme for the [`BatteryStatus`] segment
 ///
@@ -44,6 +48,14 @@ pub struct Theme {
     pub full_symbol: String,
 }
 
+impl Default for Args {
+    fn default() -> Self {
+        Self {
+            low_battery_threshold: 50.0,
+        }
+    }
+}
+
 impl Default for Theme {
     fn default() -> Self {
         Self {
@@ -70,13 +82,16 @@ impl ToSegment for BatteryStatus {
     type Theme = Theme;
 
     fn to_segment(
-        _args: Option<Self::Args>,
+        args: Option<Self::Args>,
         state: &ApplicationState,
     ) -> crate::Result<Vec<Segment>> {
+        let args = args.unwrap_or_default();
+
         let theme = &state.theme.battery;
 
         let manager = battery::Manager::new()?;
         let battery = manager.batteries()?.next().unwrap()?;
+        let state_of_charge = battery.state_of_charge().value * 100.0;
 
         let seg = match battery.state() {
             BatteryState::Charging => Segment {
@@ -85,13 +100,13 @@ impl ToSegment for BatteryStatus {
                 separator: Separator::Thick,
                 text: format!(
                     "{:.0}%{}",
-                    battery.state_of_charge().value * 100.0,
+                    state_of_charge,
                     theme.charging_symbol
                 ),
                 source: "BatteryStatus::Charging",
             },
             BatteryState::Discharging | BatteryState::Unknown
-                if battery.state_of_charge().value < 50.0 =>
+                if state_of_charge < args.low_battery_threshold =>
             {
                 Segment {
                     fg: theme.low_fg,
@@ -99,7 +114,7 @@ impl ToSegment for BatteryStatus {
                     separator: Separator::Thick,
                     text: format!(
                         "{:.0}%{}",
-                        battery.state_of_charge().value * 100.0,
+                        state_of_charge,
                         theme.discharging_symbol
                     ),
                     source: "BatteryStatus::Discharging/Unknown",
@@ -111,7 +126,7 @@ impl ToSegment for BatteryStatus {
                 separator: Separator::Thick,
                 text: format!(
                     "{:.0}%{}",
-                    battery.state_of_charge().value * 100.0,
+                    state_of_charge,
                     theme.discharging_symbol
                 ),
                 source: "BatteryStatus::Discharging/Unknown",
@@ -129,7 +144,7 @@ impl ToSegment for BatteryStatus {
                 separator: Separator::Thick,
                 text: format!(
                     "{:.0}%{}",
-                    battery.state_of_charge().value * 100.0,
+                    state_of_charge,
                     theme.empty_symbol
                 ),
                 source: "BatteryStatus::Empty",
