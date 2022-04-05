@@ -306,7 +306,10 @@ impl ToSegment for Git {
     ) -> crate::Result<Vec<Segment>> {
         let args = args.unwrap_or_default();
 
-        let mut repo = Repository::open(".")?;
+        let mut repo = match Repository::discover (".") {
+            Ok(repo) => repo,
+            Err(_) => return Ok(vec![])
+        };
 
         // Meh
         let mut stashed = 0;
