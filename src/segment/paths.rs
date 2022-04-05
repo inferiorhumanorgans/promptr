@@ -17,9 +17,6 @@ pub struct Paths {}
 #[derive(Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Args {
-    /// String/icon to replace the home directory component.  Grey beards probably want a tilde.
-    pub home_dir_replacement: String,
-
     /// Whether or not to show a path segment for the root directory
     pub show_root: bool,
 
@@ -40,14 +37,36 @@ pub struct Theme {
     pub last_bg: Color,
 
     pub dir_stack_indicator: String,
+
+    /// String/icon to replace the home directory component.  Grey beards probably want a tilde.
+    pub home_dir_replacement: String,
 }
 
 impl Default for Args {
     fn default() -> Self {
         Self {
-            home_dir_replacement: Paths::HOME_SHORTENED.into(),
+
             show_root: false,
             show_dir_stack: true,
+        }
+    }
+}
+
+impl Default for Theme {
+    fn default() -> Self {
+        Self {
+            fg: Color::Numbered(250),
+            bg: Color::Numbered(237),
+
+            home_fg: Color::Numbered(15),
+            home_bg: Color::Numbered(31),
+
+            last_fg: Color::Numbered(254),
+            last_bg: Color::Numbered(237),
+
+            // 📚 – *stack* of books
+            dir_stack_indicator: "\u{1f4da}".into(),
+            home_dir_replacement: Paths::HOME_SHORTENED.into(),
         }
     }
 }
@@ -95,7 +114,7 @@ impl ToSegment for Paths {
                             fg: theme.home_fg,
                             bg: theme.home_bg,
                             separator: Separator::Thick,
-                            text: args.home_dir_replacement.clone(),
+                            text: theme.home_dir_replacement.clone(),
                             source: "Paths::First::Home",
                         })
                     } else {
@@ -115,7 +134,7 @@ impl ToSegment for Paths {
                             fg: theme.home_fg,
                             bg: theme.home_bg,
                             separator: Separator::Thick,
-                            text: args.home_dir_replacement.clone(),
+                            text: theme.home_dir_replacement.clone(),
                             source: "Paths::Only::Home",
                         })
                     } else {
@@ -165,22 +184,5 @@ impl ToSegment for Paths {
         }
 
         Ok(segments)
-    }
-}
-
-impl Default for Theme {
-    fn default() -> Self {
-        Self {
-            fg: Color::Numbered(250),
-            bg: Color::Numbered(237),
-
-            home_fg: Color::Numbered(15),
-            home_bg: Color::Numbered(31),
-
-            last_fg: Color::Numbered(254),
-            last_bg: Color::Numbered(237),
-
-            dir_stack_indicator: "\u{1f4da}".into(),
-        }
     }
 }

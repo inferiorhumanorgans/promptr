@@ -7,7 +7,7 @@
 //!
 //! ### Our intended logic
 //!
-//! * Assume a gemset is specified as `[interpreter]ruby_veresion[@gemset]`, `interpreter` defaults to `ruby` and `gemset` to `default`
+//! * Assume a rubie is specified as `[interpreter]ruby_veresion[@gemset]`, `interpreter` defaults to `ruby` and `gemset` to `default`.  See [`Gemset`] for details.
 //! * Load environment required variables, bail if any are not present
 //!     + `rvm_version` — this is a proxy for whether `rvm` is active
 //!     + `PWD` and `HOME` — as we'll need them later.
@@ -51,6 +51,24 @@ pub struct Args {
     pub force_show: bool,
 }
 
+
+/// An RVM "rubie" – a specific instance of a ruby environment
+///
+/// There are three components: an interpreter (default: `ruby`), a version, and an optional gemset.
+/// These are the Ruby interpreters that RVM supports as of April 2022:
+/// * ruby - MRI ruby (The Gold Standard)
+/// * ironruby - a .NET ruby
+/// * jruby - Java implementation of the ruby
+/// * macruby - implementation of ruby 1.9 directly on top of macOS core technologies
+/// * maglev - 64-bit implementation on top of VMware's GemStone
+/// * mruby - lightweight ruby
+/// * opal - ruby to JavaScript compiler
+/// * rbx - Rubinius - a next generation virtual machine VM for ruby
+/// * topaz - high performance ruby, written in RPython
+/// * truffleruby - high performance ruby using GraalVM
+///
+/// TODO: Rename this to Rubie
+/// TODO: Toggle whether to show the interpreter even if it's non-default
 #[derive(Clone, PartialEq)]
 struct Gemset<SemType: std::fmt::Debug + FromStr> {
     pub interp: String,
@@ -126,6 +144,17 @@ where
                     }
                 )
             }
+        }
+    }
+}
+
+impl Default for Theme {
+    fn default() -> Self {
+        Self {
+            fg: Color::Numbered(15),
+            bg: Color::Numbered(124),
+            // ≠ - not equal
+            mismatch_symbol: " \u{2260}".to_string(),
         }
     }
 }
@@ -212,15 +241,5 @@ impl ToSegment for Rvm {
             text,
             source: "Rvm",
         }])
-    }
-}
-
-impl Default for Theme {
-    fn default() -> Self {
-        Self {
-            fg: Color::Numbered(15),
-            bg: Color::Numbered(124),
-            mismatch_symbol: " ≠".to_string(),
-        }
     }
 }

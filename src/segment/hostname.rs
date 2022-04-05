@@ -60,11 +60,18 @@ impl Default for Theme {
         Self {
             fg: Color::Numbered(250),
             bg: Color::Numbered(238),
-            jail_indicator: "🔐".into(),
-            os_macos: "🍎".into(),
-            os_freebsd: "👺".into(),
-            os_openbsd: "🐡".into(),
-            os_linux: "🐧".into(),
+
+            // 🔐 – lock and key
+            jail_indicator: "\u{1f510}".into(),
+
+            // 🍎 – duh
+            os_macos: "\u{1f34e}".into(),
+            // 👺 – beastie
+            os_freebsd: "\u{1f47a}".into(),
+            // 🐡 - puffy
+            os_openbsd: "\u{1f421}".into(),
+            // 🐧 – tux
+            os_linux: "\u{1f427}".into(),
         }
     }
 }

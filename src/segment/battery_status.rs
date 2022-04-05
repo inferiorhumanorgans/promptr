@@ -9,23 +9,39 @@ use crate::{ApplicationState, Separator};
 
 pub struct BatteryStatus {}
 
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
-pub struct Args {
-    charging_symbol: String,
-    discharging_symbol: String,
-    empty_symbol: String,
-    full_symbol: String,
-}
+pub struct Args {}
 
+/// Theme for the [`BatteryStatus`] segment
+///
+/// TODO: Make the low threshold configurable
+/// TODO: Add a third color band
+/// TODO: Encode battery health state?
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
+    /// Foreground color when the battery is ≥ 50% state-of-charge
     pub normal_fg: Color,
+    /// Background color when the battery is ≥ 50% SOC
     pub normal_bg: Color,
 
+    /// Foreground color when the battery is below 50% SOC
     pub low_fg: Color,
+    /// Background color when the battery is below 50% SOC
     pub low_bg: Color,
+
+    /// Displayed when the computer is connected to a wall charger
+    pub charging_symbol: String,
+
+    /// Displayed when the computer is not connected to a charger
+    pub discharging_symbol: String,
+
+    /// Displayed when the battery is empty
+    pub empty_symbol: String,
+
+    /// Displayed when the battery is finished charging
+    pub full_symbol: String,
 }
 
 impl Default for Theme {
@@ -36,17 +52,15 @@ impl Default for Theme {
 
             low_fg: Color::Numbered(7),
             low_bg: Color::Numbered(197),
-        }
-    }
-}
 
-impl Default for Args {
-    fn default() -> Self {
-        Self {
-            charging_symbol: "🔌".into(),
-            discharging_symbol: "⚡".into(),
-            empty_symbol: "❗".into(),
-            full_symbol: "🔋".into(),
+            // 🔌
+            charging_symbol: "\u{1f50c}".into(),
+            // ⚡
+            discharging_symbol: "\u{26a1}".into(),
+            // ❗
+            empty_symbol: "\u{2757}".into(),
+            // 🔋
+            full_symbol: "\u{1f50b}".into(),
         }
     }
 }
@@ -56,11 +70,9 @@ impl ToSegment for BatteryStatus {
     type Theme = Theme;
 
     fn to_segment(
-        args: Option<Self::Args>,
+        _args: Option<Self::Args>,
         state: &ApplicationState,
     ) -> crate::Result<Vec<Segment>> {
-        let args = args.unwrap_or_default();
-
         let theme = &state.theme.battery;
 
         let manager = battery::Manager::new()?;
@@ -74,7 +86,7 @@ impl ToSegment for BatteryStatus {
                 text: format!(
                     "{:.0}%{}",
                     battery.state_of_charge().value * 100.0,
-                    args.charging_symbol
+                    theme.charging_symbol
                 ),
                 source: "BatteryStatus::Charging",
             },
@@ -88,7 +100,7 @@ impl ToSegment for BatteryStatus {
                     text: format!(
                         "{:.0}%{}",
                         battery.state_of_charge().value * 100.0,
-                        args.discharging_symbol
+                        theme.discharging_symbol
                     ),
                     source: "BatteryStatus::Discharging/Unknown",
                 }
@@ -100,7 +112,7 @@ impl ToSegment for BatteryStatus {
                 text: format!(
                     "{:.0}%{}",
                     battery.state_of_charge().value * 100.0,
-                    args.discharging_symbol
+                    theme.discharging_symbol
                 ),
                 source: "BatteryStatus::Discharging/Unknown",
             },
@@ -108,7 +120,7 @@ impl ToSegment for BatteryStatus {
                 fg: theme.normal_fg,
                 bg: theme.normal_bg,
                 separator: Separator::Thick,
-                text: format!("100%{}", args.full_symbol),
+                text: format!("100%{}", theme.full_symbol),
                 source: "BatteryStatus::Full",
             },
             BatteryState::Empty => Segment {
@@ -118,7 +130,7 @@ impl ToSegment for BatteryStatus {
                 text: format!(
                     "{:.0}%{}",
                     battery.state_of_charge().value * 100.0,
-                    args.empty_symbol
+                    theme.empty_symbol
                 ),
                 source: "BatteryStatus::Empty",
             },

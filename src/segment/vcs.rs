@@ -58,16 +58,25 @@ pub struct Theme {
 impl Default for Symbols {
     fn default() -> Self {
         Self {
+            // ⬆
+            ahead: "\u{2b06}".into(),
+            // ⬇
+            behind: "\u{2b07}".into(),
+            // ✎ – pencil
+            changed: "\u{270e}".into(),
+            // ✼ – OPEN CENTRE TEARDROP-SPOKED ASTERISK
+            conflicted: "\u{273c}".into(),
+            // ⚓ - anchor??
             detached: "\u{2693}".into(),
-            ahead: "\u{2B06}".into(),
-            behind: "\u{2B07}".into(),
-            staged: "\u{2714}".into(),
-            changed: "✎".into(),
+            // … and the mysterians
             new: "?".into(),
-            conflicted: "\u{273C}".into(),
+            // ✔ – HEAVY CHECK MARK
+            staged: "\u{2714}".into(),
+            // ⎘ – next page?!
             stash: "\u{2398}".into(),
 
-            git: "\u{E0A0}".into(),
+            //  – ?
+            git: "\u{e0a0}".into(),
         }
     }
 }

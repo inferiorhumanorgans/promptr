@@ -8,30 +8,31 @@ use crate::{ApplicationState, Separator};
 
 pub struct CommandStatus {}
 
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
-pub struct Args {
-    root_indicator: String,
-    user_indicator: String,
-}
+pub struct Args {}
 
+/// Theme for the [`CommandStatus`] segment.
+/// 
+/// TODO: Make the exit status coloring optional
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
+    /// Foreground color when the exit status is zero
     pub success_fg: Color,
+    /// Background color when the exit status is zero
     pub success_bg: Color,
 
+    /// Foreground color when the exit status is non-zero
     pub failure_fg: Color,
+    /// Background color when the exit status is non-zero
     pub failure_bg: Color,
-}
 
-impl Default for Args {
-    fn default() -> Self {
-        Self {
-            root_indicator: "#".into(),
-            user_indicator: "\\$".into(),
-        }
-    }
+    /// Indicator used when user is super.  On bash this is typically `#`.
+    pub root_indicator: String,
+
+    /// Indicator for non-privileged users.  On bash this is typically `$`.
+    pub user_indicator: String,
 }
 
 impl Default for Theme {
@@ -39,8 +40,12 @@ impl Default for Theme {
         Self {
             success_fg: Color::Numbered(15),
             success_bg: Color::Numbered(236),
+
             failure_fg: Color::Numbered(15),
             failure_bg: Color::Numbered(161),
+
+            root_indicator: "#".into(),
+            user_indicator: "\\$".into(),
         }
     }
 }
@@ -50,11 +55,9 @@ impl ToSegment for CommandStatus {
     type Theme = Theme;
 
     fn to_segment(
-        args: Option<Self::Args>,
+        _args: Option<Self::Args>,
         state: &ApplicationState,
     ) -> crate::Result<Vec<Segment>> {
-        let args = args.unwrap_or_default();
-
         let theme = &state.theme.command_status;
 
         let (fg, bg) = match state.exit_code {
@@ -66,7 +69,7 @@ impl ToSegment for CommandStatus {
             bg,
             fg,
             separator: Separator::Thick,
-            text: args.user_indicator,
+            text: theme.user_indicator.clone(),
             source: "CommandStatus",
         }])
     }

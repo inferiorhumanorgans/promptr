@@ -126,5 +126,3 @@ jqi  '.theme.vcs.symbols.git = ""' "$(promptr location)/promptr.json"
 * `paths` segment: make the number of segments rendered configurable
 
 * format the segment impls alphabetically
-
-* move all the icon/indicator knobs into theme objects
