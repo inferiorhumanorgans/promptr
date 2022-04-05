@@ -129,23 +129,30 @@ pub fn load_segments(config: PromptrConfig) -> Result<impl Iterator<Item = Segme
     let segments = config
         .segments
         .into_iter()
-        .filter_map(|SegmentConfig { name, args }| match name.as_str() {
-            "command_status" => segment::CommandStatus::to_segment_generic(args, &state).ok(),
-            "hostname" => segment::Hostname::to_segment_generic(args, &state).ok(),
-            "paths" => segment::Paths::to_segment_generic(args, &state).ok(),
-            "rvm" => segment::Rvm::to_segment_generic(args, &state).ok(),
-            "username" => segment::Username::to_segment_generic(args, &state).ok(),
+        .map(|SegmentConfig { name, args }| match name.as_str() {
+            "command_status" => segment::CommandStatus::to_segment_generic(args, &state),
+            "hostname" => segment::Hostname::to_segment_generic(args, &state),
+            "paths" => segment::Paths::to_segment_generic(args, &state),
+            "rvm" => segment::Rvm::to_segment_generic(args, &state),
+            "username" => segment::Username::to_segment_generic(args, &state),
 
             #[cfg(feature = "segment-battery")]
-            "battery" => segment::BatteryStatus::to_segment_generic(args, &state).ok(),
+            "battery" => segment::BatteryStatus::to_segment_generic(args, &state),
 
             #[cfg(feature = "segment-git")]
-            "git" => segment::Git::to_segment_generic(args, &state).ok(),
+            "git" => segment::Git::to_segment_generic(args, &state),
 
             seg => {
                 eprintln!("Unknown segment: {}", seg);
-                None
+                Err(anyhow!("Unknown segment"))
             }
+        })
+        .filter_map(|segment_result| match segment_result {
+            Ok(unflat_segments) => Some(unflat_segments),
+            Err(err) => {
+                eprintln!("Error: {:?}", err);
+                None
+            },
         })
         .collect_vec()
         .into_iter()
