@@ -102,6 +102,9 @@ pub struct Theme {
     #[cfg(feature = "segment-rvm")]
     pub rvm: segment::rvm::Theme,
 
+    /// Theme for the [`screen`](`segment::screen`) segment.
+    pub screen: segment::screen::Theme,
+
     pub thin_separator_fg: ansi::Color,
 }
 
@@ -160,6 +163,8 @@ impl Default for Theme {
             username: Default::default(),
             paths: Default::default(),
             rvm: Default::default(),
+            screen: Default::default(),
+
             thin_separator_fg: ansi::Color::Numbered(244),
         }
     }

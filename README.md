@@ -119,8 +119,6 @@ jqi  '.theme.vcs.symbols.git = ""' "$(promptr location)/promptr.json"
 
 * `promptr explain` to show the documentation for a segment on the command line
 
-* `screen` segment to show if we're running under a screen (show screen name/pid, window #, tv emoji). Note sudo will clobber most of the screen env vars so we can't rely on detailed info (e.g. screen name, window number) but since `TERM` is (almost?) always preserved and set to `screen` or `screen-foo` we can at least do a quick boolean check.
-
 * `ssh` segment (badge on hostname seg?), walk the process tree and see if it ends with sshd. Note: screen appears to save the SSH env vars when you create a new screen so that's not 100% reliable.
 
 * `paths` segment: make the number of segments rendered configurable

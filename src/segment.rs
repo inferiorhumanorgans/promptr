@@ -65,36 +65,25 @@ pub trait ToSegment {
 
 #[cfg(feature = "segment-battery")]
 pub mod battery_status;
-
 pub mod command_status;
-
 #[cfg(feature = "segment-git")]
 pub mod git;
-
 pub mod hostname;
-
 pub mod paths;
-
 #[cfg(feature = "segment-rvm")]
 pub mod rvm;
-
+pub mod screen;
 pub mod username;
-
 pub mod vcs;
 
 #[cfg(feature = "segment-battery")]
 pub use battery_status::BatteryStatus;
-
 pub use command_status::CommandStatus;
-
 #[cfg(feature = "segment-git")]
 pub use git::Git;
-
 pub use self::hostname::Hostname;
-
 pub use paths::Paths;
-
 #[cfg(feature = "segment-rvm")]
 pub use rvm::Rvm;
-
 pub use username::Username;
+pub use screen::Screen;

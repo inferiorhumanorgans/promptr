@@ -134,6 +134,7 @@ pub fn load_segments(config: PromptrConfig) -> Result<impl Iterator<Item = Segme
             "hostname" => segment::Hostname::to_segment_generic(args, &state),
             "paths" => segment::Paths::to_segment_generic(args, &state),
             "rvm" => segment::Rvm::to_segment_generic(args, &state),
+            "screen" => segment::Screen::to_segment_generic(args, &state),
             "username" => segment::Username::to_segment_generic(args, &state),
 
             #[cfg(feature = "segment-battery")]
