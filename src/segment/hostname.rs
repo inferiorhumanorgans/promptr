@@ -1,7 +1,5 @@
 //! The `Hostname` segment diplays the system hostname
 
-use std::env;
-
 use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
 use sysctl::{Ctl, Sysctl};
@@ -89,7 +87,11 @@ impl ToSegment for Hostname {
         let Theme { fg, bg, .. } = state.theme.hostname;
         let theme = &state.theme.hostname;
 
-        let hostname = env::var("hostname").map_err(|_| anyhow!("Hostname not set, check init"))?;
+        let hostname = state
+            .env
+            .get("hostname")
+            .ok_or_else(|| anyhow!("Hostname not set, check init"))?
+            .to_string();
         let hostname = match args.show_domain {
             true => hostname,
             false => hostname

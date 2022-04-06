@@ -29,7 +29,6 @@
 //!     + Print the current ruby version and append [`theme.rvm.mismatch_symbol`](`Theme`)
 //! * If the two match, print the current ruby version
 
-use std::env;
 use std::fs::metadata;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
@@ -168,16 +167,31 @@ impl ToSegment for Rvm {
 
         // We don't actually care what the RVM version is
         // we just want to bail if RVM isn't loaded
-        env::var("rvm_version")?;
+        state
+            .env
+            .get("rvm_version")
+            .ok_or_else(|| anyhow!("RVM isn't loaded"))?;
 
         // Take a quick look for a Gemfile as a proxy for whether or not we care about rvm
         // TODO: Should we follow symlinks or what?
-        let pwd = env::var("PWD")?;
+        let pwd = state
+            .env
+            .get("PWD")
+            .ok_or_else(|| anyhow!("Can't determine current directory"))?
+            .to_string();
 
         // Yeah, let's bail if we can't find our way home
-        let home = env::var("HOME")?;
+        let home = state
+            .env
+            .get("HOME")
+            .ok_or_else(|| anyhow!("Can't determine home dir"))?
+            .to_string();
 
-        let rvm_path: String = env::var("rvm_path")?;
+        let rvm_path: String = state
+            .env
+            .get("rvm_path")
+            .ok_or_else(|| anyhow!("Hostname not set, check init"))?
+            .to_string();
         let rvm_path = Path::new(rvm_path.as_str()).join("gems/");
 
         let has_gemfile = find_ancestors("Gemfile", &pwd, &home, &rvm_path).is_some();
@@ -197,7 +211,11 @@ impl ToSegment for Rvm {
             }
         };
 
-        let gem_home: String = env::var("GEM_HOME")?;
+        let gem_home = state
+            .env
+            .get("GEM_HOME")
+            .ok_or_else(|| anyhow!("GEM_HOME not set"))?
+            .to_string();
         let cur_ruby_version = gem_home.replace(rvm_path.to_str().unwrap(), "");
         let cur_ruby_version = Gemset::<semver::Version>::from_str(cur_ruby_version.as_str())
             .map_err(|_| anyhow!("couldn't parse the current ruby version"))?;

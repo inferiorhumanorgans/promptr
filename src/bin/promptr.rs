@@ -4,8 +4,8 @@ use directories::ProjectDirs;
 use itertools::Itertools;
 use serde_json::from_reader as json_from_reader;
 
+use std::collections::HashMap;
 use std::env;
-
 use std::fs::{self, File};
 use std::path::PathBuf;
 
@@ -122,6 +122,10 @@ pub fn load_segments(config: PromptrConfig) -> Result<impl Iterator<Item = Segme
     let state = ApplicationState {
         exit_code,
         theme: &config.theme,
+        env: env::vars().fold(HashMap::new(), |mut acc, (key, value)| {
+            acc.insert(key, value);
+            acc
+        }),
     };
 
     assert_eq!(config.promptr_config, 12);

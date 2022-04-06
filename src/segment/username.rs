@@ -2,8 +2,7 @@
 //!
 //! **TODO** check `${SUDO_UID}` to determine if we're being run in a `sudo` context
 
-use std::env;
-
+use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
 
 use crate::ansi::Color;
@@ -42,7 +41,11 @@ impl ToSegment for Username {
     ) -> crate::Result<Vec<Segment>> {
         let theme = &state.theme.username;
 
-        let text = env::var("USER")?;
+        let text = state
+            .env
+            .get("USER")
+            .ok_or_else(|| anyhow!("$USER not set"))?
+            .to_string();
 
         Ok(vec![Segment {
             fg: theme.fg,

@@ -1,8 +1,8 @@
 //! The `Path` segment displays breadcrumbs to the current working directory
-use std::env;
 use std::path::Component;
 use std::str::FromStr;
 
+use anyhow::anyhow;
 use itertools::{Itertools, Position};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -86,8 +86,16 @@ impl ToSegment for Paths {
 
         let theme = &state.theme.paths;
 
-        let path = env::var("PWD")?;
-        let home_dir = env::var("HOME").expect("Couldn't determine home directory");
+        let path = state
+            .env
+            .get("PWD")
+            .ok_or_else(|| anyhow!("PWD not set"))?
+            .to_string();
+        let home_dir = state
+            .env
+            .get("HOME")
+            .ok_or_else(|| anyhow!("Couldn't determine home directory"))?
+            .to_string();
         let home_regex = Regex::new(format!("^{}", home_dir).as_str()).unwrap();
         let path: String = home_regex
             .replace(path.as_ref(), Self::HOME_SHORTENED)
@@ -165,7 +173,7 @@ impl ToSegment for Paths {
             .collect();
 
         if args.show_dir_stack {
-            if let Ok(dirs) = env::var("dirs") {
+            if let Some(dirs) = state.env.get("dirs") {
                 let dir_stack_depth = dirs.split('\n').count();
                 if dir_stack_depth > 1 {
                     segments.insert(

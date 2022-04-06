@@ -6,8 +6,6 @@
 //!
 //! <https://unix.stackexchange.com/questions/81923/gnu-screen-doesnt-echo-unicode-characters-correct#answer-605566>
 
-use std::env;
-
 use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
 
@@ -80,14 +78,14 @@ impl ToSegment for Screen {
         let theme = &state.theme.screen;
 
         // This isn't reliable and will be lost if we sudo within the screen
-        let screen_tty = match env::var("STY") {
-            Ok(sty) => sty,
-            Err(_) => return Ok(vec![]),
+        let screen_tty = match state.env.get("STY") {
+            Some(sty) => sty,
+            None => return Ok(vec![]),
         };
 
-        let window = match env::var("WINDOW") {
-            Ok(window) => window,
-            Err(_) => return Ok(vec![]),
+        let window = match state.env.get("WINDOW") {
+            Some(window) => window,
+            None => return Ok(vec![]),
         };
 
         let mut iterator = screen_tty.splitn(2, '.');
@@ -102,7 +100,7 @@ impl ToSegment for Screen {
             "{}{}{}{}{}{}",
             match args.show_window_number {
                 true => window,
-                false => "".to_string(),
+                false => "",
             },
             match args.show_window_number && (args.show_screen_pid || args.show_screen_name) {
                 true => "[",

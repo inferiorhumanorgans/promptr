@@ -6,7 +6,11 @@
 
 use serde::{Deserialize, Serialize};
 
+use std::collections::HashMap;
 use std::fmt::{self, Display};
+
+#[cfg(test)]
+mod test;
 
 pub mod ansi;
 pub mod segment;
@@ -21,6 +25,7 @@ pub use anyhow::Result;
 pub struct ApplicationState<'a> {
     pub exit_code: u8,
     pub theme: &'a Theme,
+    pub env: HashMap<String, String>,
 }
 
 /// Represents the contents of a JSON config file.
