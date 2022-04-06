@@ -45,7 +45,6 @@ pub struct Theme {
 impl Default for Args {
     fn default() -> Self {
         Self {
-
             show_root: false,
             show_dir_stack: true,
         }
@@ -94,7 +93,7 @@ impl ToSegment for Paths {
             .replace(path.as_ref(), Self::HOME_SHORTENED)
             .into();
         let path = std::path::PathBuf::from_str(path.as_str()).unwrap();
-        let mut segments : Vec<Segment> = path
+        let mut segments: Vec<Segment> = path
             .components()
             .with_position()
             .filter_map(|component| match component {
@@ -177,7 +176,7 @@ impl ToSegment for Paths {
                             separator: Separator::Thick,
                             text: format!("{} {}", dir_stack_depth, theme.dir_stack_indicator),
                             source: "Paths::BashDirStack",
-                        }
+                        },
                     );
                 }
             }

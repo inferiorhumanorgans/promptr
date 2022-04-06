@@ -51,7 +51,6 @@ pub struct Args {
     pub force_show: bool,
 }
 
-
 /// An RVM "rubie" – a specific instance of a ruby environment
 ///
 /// There are three components: an interpreter (default: `ruby`), a version, and an optional gemset.
@@ -133,16 +132,14 @@ where
             Some(caps) => {
                 let version = SemType::from_str(caps.get(3).unwrap().as_str()).unwrap();
 
-                Ok(
-                    Self {
-                        interp: caps
-                            .get(2)
-                            .map(|re_match| re_match.as_str().into())
-                            .unwrap_or_else(|| "ruby".to_string()),
-                        version,
-                        gemset: caps.get(10).map(|re_match| re_match.as_str().to_string()),
-                    }
-                )
+                Ok(Self {
+                    interp: caps
+                        .get(2)
+                        .map(|re_match| re_match.as_str().into())
+                        .unwrap_or_else(|| "ruby".to_string()),
+                    version,
+                    gemset: caps.get(10).map(|re_match| re_match.as_str().to_string()),
+                })
             }
         }
     }

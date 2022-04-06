@@ -153,7 +153,7 @@ pub fn load_segments(config: PromptrConfig) -> Result<impl Iterator<Item = Segme
             Err(err) => {
                 eprintln!("Error: {:?}", err);
                 None
-            },
+            }
         })
         .collect_vec()
         .into_iter()

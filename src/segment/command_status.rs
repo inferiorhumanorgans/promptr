@@ -13,7 +13,7 @@ pub struct CommandStatus {}
 pub struct Args {}
 
 /// Theme for the [`CommandStatus`] segment.
-/// 
+///
 /// TODO: Make the exit status coloring optional
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]

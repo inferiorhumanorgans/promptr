@@ -81,9 +81,9 @@ pub use battery_status::BatteryStatus;
 pub use command_status::CommandStatus;
 #[cfg(feature = "segment-git")]
 pub use git::Git;
-pub use self::hostname::Hostname;
+pub use hostname::Hostname;
 pub use paths::Paths;
 #[cfg(feature = "segment-rvm")]
 pub use rvm::Rvm;
-pub use username::Username;
 pub use screen::Screen;
+pub use username::Username;
