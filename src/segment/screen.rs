@@ -4,7 +4,7 @@
 //! **NOTE** Versions of GNU screen before 4.2.0 will not properly display emoji.  If you *are*
 //! using an older version of screen ensure that you're using compatible icons everywhere.
 //!
-//! https://unix.stackexchange.com/questions/81923/gnu-screen-doesnt-echo-unicode-characters-correct#answer-605566
+//! <https://unix.stackexchange.com/questions/81923/gnu-screen-doesnt-echo-unicode-characters-correct#answer-605566>
 
 use std::env;
 
@@ -104,11 +104,7 @@ impl ToSegment for Screen {
                 true => window,
                 false => "".to_string(),
             },
-            match args.show_window_number
-                && (args.show_screen_pid == true
-                    || args.show_screen_name == true
-                    || args.show_window_number == true)
-            {
+            match args.show_window_number && (args.show_screen_pid || args.show_screen_name) {
                 true => "[",
                 false => "",
             },
@@ -120,11 +116,7 @@ impl ToSegment for Screen {
                 true => name,
                 false => "",
             },
-            match args.show_window_number
-                && (args.show_screen_pid == true
-                    || args.show_screen_name == true
-                    || args.show_window_number == true)
-            {
+            match args.show_window_number && (args.show_screen_pid || args.show_screen_name) {
                 true => "]",
                 false => "",
             },

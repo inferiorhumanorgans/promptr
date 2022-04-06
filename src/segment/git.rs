@@ -69,12 +69,12 @@ struct Stats {
 }
 
 fn seg_in_progress(repo: &Repository, args: &Args, theme: &VcsTheme, segments: &mut Vec<Segment>) {
-    if args.show_in_progress != true {
+    if args.show_in_progress {
         return;
     }
 
     match repo.state() {
-        RepositoryState::Bisect if args.show_bisect == true => segments.push(Segment {
+        RepositoryState::Bisect if args.show_bisect => segments.push(Segment {
             fg: theme.git_in_progress_fg,
             bg: theme.git_in_progress_bg,
             separator: Separator::Thick,
@@ -82,7 +82,7 @@ fn seg_in_progress(repo: &Repository, args: &Args, theme: &VcsTheme, segments: &
             source: "Git::Bisect",
         }),
         RepositoryState::CherryPick | RepositoryState::CherryPickSequence
-            if args.show_cherry_pick == true =>
+            if args.show_cherry_pick =>
         {
             segments.push(Segment {
                 fg: theme.git_in_progress_fg,
@@ -92,7 +92,7 @@ fn seg_in_progress(repo: &Repository, args: &Args, theme: &VcsTheme, segments: &
                 source: "Git::CherryPick",
             })
         }
-        RepositoryState::Merge if args.show_merge == true => segments.push(Segment {
+        RepositoryState::Merge if args.show_merge => segments.push(Segment {
             fg: theme.git_in_progress_fg,
             bg: theme.git_in_progress_bg,
             separator: Separator::Thick,
@@ -102,7 +102,7 @@ fn seg_in_progress(repo: &Repository, args: &Args, theme: &VcsTheme, segments: &
         RepositoryState::Rebase
         | RepositoryState::RebaseInteractive
         | RepositoryState::RebaseMerge
-            if args.show_rebase == true =>
+            if args.show_rebase =>
         {
             segments.push(Segment {
                 fg: theme.git_in_progress_fg,
@@ -228,7 +228,7 @@ fn seg_stashed(
     theme: &VcsTheme,
     segments: &mut Vec<Segment>,
 ) {
-    if stats.stashed > 0 && args.show_stash == true {
+    if stats.stashed > 0 && args.show_stash {
         segments.push(Segment {
             fg: theme.git_stashed_fg,
             bg: theme.git_stashed_bg,

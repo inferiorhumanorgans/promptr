@@ -69,7 +69,7 @@ pub struct Args {
 /// TODO: Rename this to Rubie
 /// TODO: Toggle whether to show the interpreter even if it's non-default
 #[derive(Clone, PartialEq)]
-struct Gemset<SemType: std::fmt::Debug + FromStr> {
+pub struct Gemset<SemType: std::fmt::Debug + FromStr> {
     pub interp: String,
     pub version: SemType,
     pub gemset: Option<String>,
@@ -100,11 +100,9 @@ fn find_ancestors(target: &str, pwd: &str, home: &str, rvm_path: &PathBuf) -> Op
         let path_ref = path.as_ref().unwrap();
         let file_ref = path_ref.join(target);
 
-        if path_ref != &home_path && path_ref != rvm_path {
-            if metadata(&file_ref).is_ok() {
-                has_target = Some(file_ref);
-                break;
-            }
+        if path_ref != &home_path && path_ref != rvm_path && metadata(&file_ref).is_ok() {
+            has_target = Some(file_ref);
+            break;
         }
 
         path = path_ref.parent();
@@ -185,7 +183,7 @@ impl ToSegment for Rvm {
         let has_gemfile = find_ancestors("Gemfile", &pwd, &home, &rvm_path).is_some();
 
         // Unless forced to, skip directories without a bundler Gemfile
-        if args.force_show != true && has_gemfile != true {
+        if !args.force_show && !has_gemfile {
             return Ok(vec![]);
         }
 

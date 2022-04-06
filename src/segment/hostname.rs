@@ -101,7 +101,7 @@ impl ToSegment for Hostname {
 
         let mut hostname = vec![hostname];
 
-        if args.show_os_indicator == true {
+        if args.show_os_indicator {
             if cfg!(target_os = "macos") {
                 hostname.push(theme.os_macos.to_string());
             } else if cfg!(target_os = "freebsd") {
@@ -114,7 +114,7 @@ impl ToSegment for Hostname {
         }
 
         #[cfg(target_family = "unix")]
-        if args.show_jail_indicator == true {
+        if args.show_jail_indicator {
             if let Ok(ctl) = Ctl::new("security.jail.jailed") {
                 if let Ok(sysctl::CtlValue::Int(jailed)) = ctl.value() {
                     if jailed == 1 {

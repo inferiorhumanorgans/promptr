@@ -164,9 +164,9 @@ impl ToSegment for Paths {
             })
             .collect();
 
-        if args.show_dir_stack == true {
+        if args.show_dir_stack {
             if let Ok(dirs) = env::var("dirs") {
-                let dir_stack_depth = dirs.split("\n").collect::<Vec<_>>().len();
+                let dir_stack_depth = dirs.split('\n').count();
                 if dir_stack_depth > 1 {
                     segments.insert(
                         0,
