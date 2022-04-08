@@ -98,7 +98,7 @@ impl ToSegment for BatteryStatus {
                 fg: theme.normal_fg,
                 bg: theme.normal_bg,
                 separator: Separator::Thick,
-                text: format!("{:.0}%{}", state_of_charge, theme.charging_symbol),
+                text: format!("{:.0}% {}", state_of_charge, theme.charging_symbol),
                 source: "BatteryStatus::Charging",
             },
             BatteryState::Discharging | BatteryState::Unknown
@@ -108,7 +108,7 @@ impl ToSegment for BatteryStatus {
                     fg: theme.low_fg,
                     bg: theme.low_bg,
                     separator: Separator::Thick,
-                    text: format!("{:.0}%{}", state_of_charge, theme.discharging_symbol),
+                    text: format!("{:.0}% {}", state_of_charge, theme.discharging_symbol),
                     source: "BatteryStatus::Discharging/Unknown",
                 }
             }
@@ -116,21 +116,21 @@ impl ToSegment for BatteryStatus {
                 fg: theme.normal_fg,
                 bg: theme.normal_bg,
                 separator: Separator::Thick,
-                text: format!("{:.0}%{}", state_of_charge, theme.discharging_symbol),
+                text: format!("{:.0}% {}", state_of_charge, theme.discharging_symbol),
                 source: "BatteryStatus::Discharging/Unknown",
             },
             BatteryState::Full => Segment {
                 fg: theme.normal_fg,
                 bg: theme.normal_bg,
                 separator: Separator::Thick,
-                text: format!("100%{}", theme.full_symbol),
+                text: format!("100% {}", theme.full_symbol),
                 source: "BatteryStatus::Full",
             },
             BatteryState::Empty => Segment {
                 fg: theme.low_fg,
                 bg: theme.low_bg,
                 separator: Separator::Thick,
-                text: format!("{:.0}%{}", state_of_charge, theme.empty_symbol),
+                text: format!("{:.0}% {}", state_of_charge, theme.empty_symbol),
                 source: "BatteryStatus::Empty",
             },
             cur_state => Err(anyhow!("unknown battery state:{:?}", cur_state))?,
