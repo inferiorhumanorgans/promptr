@@ -27,21 +27,24 @@ impl Shell {
     pub fn get_current_shell() -> Result<Self> {
         let shell: String = env::var("PROMPTR_SHELL")
             .or_else::<anyhow::Error, _>(|_| {
-                let shell = env::var("SHELL")?;
-                Ok(shell)
+                let shell_via_parent = crate::ffi::get_process_name(std::os::unix::process::parent_id() as u64);
+                match shell_via_parent {
+                    _ if shell_via_parent.is_empty()  => Err(anyhow!("Couldn't determine shell")),
+                    shell => Ok(shell),
+                }
             })
             .and_then(|shell| {
                 let path = Path::new(shell.as_str());
                 Ok(path
                     .file_name()
-                    .ok_or_else(|| anyhow!("Couldn't detemine shell"))?
+                    .ok_or_else(|| anyhow!("Couldn't determine shell"))?
                     .to_string_lossy()
                     .into())
             })?;
 
         match shell.as_str() {
             "bash" => Ok(Shell::Bash),
-            _ => Err(anyhow!("This shell is incompatible with promptr")),
+            other_shell => Err(anyhow!("This shell is incompatible with promptr: {}", other_shell)),
         }
     }
 

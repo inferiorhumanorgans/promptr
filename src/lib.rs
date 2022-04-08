@@ -9,6 +9,15 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::{self, Display};
 
+#[cfg(any(target_os = "macos", target_os = "freebsd"))]
+#[cxx::bridge]
+mod ffi {
+    unsafe extern "C++" {
+        include!("promptr/ffi/ffi.h");
+        fn get_process_name(pid: u64) -> String;
+    }
+}
+
 #[cfg(test)]
 mod test;
 

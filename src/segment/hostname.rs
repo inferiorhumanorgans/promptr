@@ -2,6 +2,8 @@
 
 use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
+
+#[cfg(target_os = "freebsd")]
 use sysctl::{Ctl, Sysctl};
 
 use crate::ansi::Color;
@@ -115,7 +117,7 @@ impl ToSegment for Hostname {
             }
         }
 
-        #[cfg(target_family = "unix")]
+        #[cfg(target_os = "freebsd")]
         if args.show_jail_indicator {
             if let Ok(ctl) = Ctl::new("security.jail.jailed") {
                 if let Ok(sysctl::CtlValue::Int(jailed)) = ctl.value() {
