@@ -11,15 +11,35 @@ use crate::{ApplicationState, Separator};
 
 pub struct Username {}
 
-#[derive(Default, Deserialize)]
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SudoIndicator {
+    Symbol,
+    Username,
+    None,
+}
+
+#[derive(Deserialize)]
 #[serde(default, deny_unknown_fields)]
-pub struct Args {}
+pub struct Args {
+    pub sudo_indicator: SudoIndicator,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     pub fg: Color,
     pub bg: Color,
+
+    pub sudo_indicator: String,
+}
+
+impl Default for Args {
+    fn default() -> Self {
+        Self {
+            sudo_indicator: SudoIndicator::Symbol,
+        }
+    }
 }
 
 impl Default for Theme {
@@ -27,6 +47,9 @@ impl Default for Theme {
         Self {
             fg: Color::Numbered(250),
             bg: Color::Numbered(240),
+
+            // ≈ pseudo… almost equal
+            sudo_indicator: "\u{2248}".into(),
         }
     }
 }
@@ -36,16 +59,32 @@ impl ToSegment for Username {
     type Theme = Theme;
 
     fn to_segment(
-        _args: Option<Self::Args>,
+        args: Option<Self::Args>,
         state: &ApplicationState,
     ) -> crate::Result<Vec<Segment>> {
+        let args = args.unwrap_or_default();
+
         let theme = &state.theme.username;
 
-        let text = state
+        let effective_user = state
             .env
             .get("USER")
             .ok_or_else(|| anyhow!("$USER not set"))?
             .to_string();
+
+        let sudo_user = state.env
+            .get("SUDO_USER");
+
+        let text = match sudo_user {
+            None => effective_user,
+            Some(sudo_user) => {
+                match args.sudo_indicator {
+                    SudoIndicator::None => effective_user,
+                    SudoIndicator::Symbol => format!("{}{}", theme.sudo_indicator, effective_user),
+                    SudoIndicator::Username => format!("{} \u{2192} {}", sudo_user, effective_user),
+                }
+            }
+        };
 
         Ok(vec![Segment {
             fg: theme.fg,
