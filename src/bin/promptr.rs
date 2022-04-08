@@ -117,10 +117,7 @@ pub fn load_config(quiet: bool) -> PromptrConfig {
 ///
 /// An iterator over [`Segment`].
 pub fn load_segments(config: PromptrConfig) -> Result<impl Iterator<Item = Segment>> {
-    let exit_code: u8 = env::var("code")?.parse::<u8>()?;
-
     let state = ApplicationState {
-        exit_code,
         theme: &config.theme,
         env: env::vars().fold(HashMap::new(), |mut acc, (key, value)| {
             acc.insert(key, value);

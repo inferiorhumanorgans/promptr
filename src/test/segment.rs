@@ -69,7 +69,6 @@ macro_rules! declare_segement_test {
                             ]);
 
                             let state = ApplicationState {
-                                exit_code: 0,
                                 theme: &Theme::default(),
                                 env,
                             };

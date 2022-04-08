@@ -32,7 +32,6 @@ pub use anyhow::Result;
 /// information.
 #[derive(Debug)]
 pub struct ApplicationState<'a> {
-    pub exit_code: u8,
     pub theme: &'a Theme,
     pub env: HashMap<String, String>,
 }

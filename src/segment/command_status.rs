@@ -60,9 +60,11 @@ impl ToSegment for CommandStatus {
     ) -> crate::Result<Vec<Segment>> {
         let theme = &state.theme.command_status;
 
-        let (fg, bg) = match state.exit_code {
-            0 => (theme.success_fg, theme.success_bg),
-            _ => (theme.failure_fg, theme.failure_bg),
+        let exit_code = state.env.get("code").map_or("0", String::as_str);
+        let (fg, bg) = match exit_code.parse::<u8>() {
+            Ok(0) => (theme.success_fg, theme.success_bg),
+            Ok(_) => (theme.failure_fg, theme.failure_bg),
+            _ => (theme.success_fg, theme.success_bg),
         };
 
         Ok(vec![Segment {
