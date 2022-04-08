@@ -81,6 +81,10 @@ impl ToSegment for BatteryStatus {
     type Args = Args;
     type Theme = Theme;
 
+    fn error_context() -> &'static str {
+        "segment::BatteryStatus"
+    }
+
     fn to_segment(
         args: Option<Self::Args>,
         state: &ApplicationState,
@@ -90,7 +94,7 @@ impl ToSegment for BatteryStatus {
         let theme = &state.theme.battery;
 
         let manager = battery::Manager::new()?;
-        let battery = manager.batteries()?.next().unwrap()?;
+        let battery = manager.batteries()?.next().ok_or_else(|| anyhow!("battery status unwrapping nightmare"))??;
         let state_of_charge = battery.state_of_charge().value * 100.0;
 
         let seg = match battery.state() {

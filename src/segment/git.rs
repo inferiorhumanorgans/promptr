@@ -9,7 +9,7 @@
 //! * in-progress action (e.g. rebase, merge, cherry pick)
 //! * stash count
 
-use anyhow::anyhow;
+use anyhow::{anyhow, Result};
 use git2::{BranchType, ErrorCode, Repository, RepositoryState, StatusOptions};
 use serde::Deserialize;
 
@@ -121,22 +121,20 @@ fn seg_ahead_behind(
     _args: &Args,
     theme: &VcsTheme,
     segments: &mut Vec<Segment>,
-) {
-    let head = match repo.head() {
-        Ok(head) => head,
-        Err(_) => return,
-    };
-    let head_name = head.shorthand().unwrap();
-    let head_branch = match repo.find_branch(head_name, BranchType::Local) {
-        Ok(head_branch) => head_branch,
-        Err(_) => return, // Likely a detached head.  Rebase?
-    };
-    let head_oid = head.target().unwrap();
-    let upstream_branch = match head_branch.upstream() {
-        Ok(upstream) => upstream,
-        Err(_) => return, // No upstream to track so we can't generate meaningful info.
-    };
-    let upstream_oid = upstream_branch.get().target().unwrap();
+) -> Result<()> {
+    let head = repo.head()?;
+
+    let head_name = head.shorthand().ok_or_else(|| anyhow!("couldn't get a shorthand version of head"))?;
+
+    // Likely a detached head if we error out.  Rebase?
+    let head_branch = repo.find_branch(head_name, BranchType::Local)?;
+
+    let head_oid = head.target().ok_or_else(|| anyhow!("couldn't find head -> target"))?;
+
+    // On error: no upstream to track so we can't generate meaningful info.
+    let upstream_branch = head_branch.upstream()?;
+
+    let upstream_oid = upstream_branch.get().target().ok_or_else(|| anyhow!("couldn't find upstream oid"))?;
 
     if let Ok((ahead, behind)) = repo.graph_ahead_behind(head_oid, upstream_oid) {
         let first_separator = if ahead > 0 && behind > 0 {
@@ -165,6 +163,8 @@ fn seg_ahead_behind(
             });
         }
     }
+
+    Ok(())
 }
 
 fn seg_untracked(
@@ -245,7 +245,7 @@ fn seg_current_branch(
     _args: &Args,
     theme: &VcsTheme,
     segments: &mut Vec<Segment>,
-) {
+) -> Result<()> {
     let (fg, bg) = match stats.dirty() {
         false => (theme.repo_clean_fg, theme.repo_clean_bg),
         true => (theme.repo_dirty_fg, theme.repo_dirty_bg),
@@ -256,7 +256,7 @@ fn seg_current_branch(
         Err(ref e) if e.code() == ErrorCode::UnbornBranch || e.code() == ErrorCode::NotFound => {
             None
         }
-        Err(_) => return,
+        Err(e) => Err(e)?,
     };
 
     let head = head.as_ref().and_then(|h| h.shorthand());
@@ -265,12 +265,11 @@ fn seg_current_branch(
         bg,
         fg,
         separator: Separator::Thick,
-        text: head
-            .or(Some("HEAD (no branch)"))
-            .map(|x| format!("{} {}", theme.symbols.git, x))
-            .unwrap(),
+        text: format!("{} {}", theme.symbols.git, head.unwrap_or("HEAD (no branch)")),
         source: "Git::Branch",
     });
+
+    Ok(())
 }
 
 impl Default for Args {
@@ -300,6 +299,10 @@ impl ToSegment for Git {
     type Args = Args;
     type Theme = super::vcs::Theme;
 
+    fn error_context() -> &'static str {
+        "segment::Git"
+    }
+
     fn to_segment(
         args: Option<Self::Args>,
         state: &ApplicationState,
@@ -328,7 +331,7 @@ impl ToSegment for Git {
         opts.include_untracked(true)
             .include_untracked(true)
             .recurse_untracked_dirs(true);
-        let statuses = repo.statuses(Some(&mut opts)).unwrap();
+        let statuses = repo.statuses(Some(&mut opts))?;
 
         let untracked = statuses
             .iter()
@@ -370,8 +373,9 @@ impl ToSegment for Git {
             stashed,
         };
 
-        seg_current_branch(&repo, &stats, &args, &state.theme.vcs, &mut segments);
-        seg_ahead_behind(&repo, &args, &state.theme.vcs, &mut segments);
+        // TODO: We should really print out the segments we can on STDOUT and the errors on STDERR
+        seg_current_branch(&repo, &stats, &args, &state.theme.vcs, &mut segments)?;
+        seg_ahead_behind(&repo, &args, &state.theme.vcs, &mut segments)?;
         seg_in_progress(&repo, &args, &state.theme.vcs, &mut segments);
         seg_staged(&repo, &stats, &args, &state.theme.vcs, &mut segments);
         seg_changed(&repo, &stats, &args, &state.theme.vcs, &mut segments);

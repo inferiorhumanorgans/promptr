@@ -80,6 +80,10 @@ impl ToSegment for Hostname {
     type Args = Args;
     type Theme = Theme;
 
+    fn error_context() -> &'static str {
+        "segment::Hostname"
+    }
+
     fn to_segment(
         args: Option<Self::Args>,
         state: &ApplicationState,
@@ -94,12 +98,13 @@ impl ToSegment for Hostname {
             .get("hostname")
             .ok_or_else(|| anyhow!("Hostname not set, check init"))?
             .to_string();
+
         let hostname = match args.show_domain {
             true => hostname,
             false => hostname
                 .split('.')
                 .next()
-                .expect("Couldn't determine hostname")
+                .ok_or_else(|| anyhow!("Couldn't determine hostname"))?
                 .to_string(),
         };
 

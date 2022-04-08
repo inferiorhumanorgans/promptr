@@ -68,6 +68,10 @@ impl ToSegment for Screen {
     type Args = Args;
     type Theme = Theme;
 
+    fn error_context() -> &'static str {
+        "segment::Screen"
+    }
+
     fn to_segment(
         args: Option<Self::Args>,
         state: &ApplicationState,

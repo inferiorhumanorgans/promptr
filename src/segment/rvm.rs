@@ -114,20 +114,18 @@ where
     SemType: std::fmt::Debug + FromStr,
     <SemType as FromStr>::Err: std::fmt::Debug,
 {
-    type Err = ();
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        let re = Regex::new(r"(([\w_]+)-)?(((\d+)\.)?((\d+)\.)?(\d+))(@([\w_]+))?")
-            .expect("rvm regex error, we should never be here");
-        if !re.is_match(s) {
-            // Not a valid thing
-            Err(())?
-        }
+        let re = Regex::new(r"(([\w_]+)-)?(((\d+)\.)?((\d+)\.)?(\d+))(@([\w_]+))?")?;
 
         match re.captures(s) {
-            None => Err(()),
+            None => Err(anyhow!("Invalid rubie specified")),
             Some(caps) => {
-                let version = SemType::from_str(caps.get(3).unwrap().as_str()).unwrap();
+                let version = match SemType::from_str(caps.get(3).ok_or_else(|| anyhow!("Invalid rubie version specified"))?.as_str()) {
+                    Ok(version) => version,
+                    Err(_) => Err(anyhow!("Invalid ruby version"))?
+                };
 
                 Ok(Self {
                     interp: caps
@@ -156,6 +154,10 @@ impl Default for Theme {
 impl ToSegment for Rvm {
     type Args = Args;
     type Theme = Theme;
+
+    fn error_context() -> &'static str {
+        "segment::Hostname"
+    }
 
     fn to_segment(
         args: Option<Self::Args>,
@@ -216,7 +218,7 @@ impl ToSegment for Rvm {
             .get("GEM_HOME")
             .ok_or_else(|| anyhow!("GEM_HOME not set"))?
             .to_string();
-        let cur_ruby_version = gem_home.replace(rvm_path.to_str().unwrap(), "");
+        let cur_ruby_version = gem_home.replace(rvm_path.to_str().expect("Oh come on, non UTF-8 filenames???"), "");
         let cur_ruby_version = Gemset::<semver::Version>::from_str(cur_ruby_version.as_str())
             .map_err(|_| anyhow!("couldn't parse the current ruby version"))?;
 

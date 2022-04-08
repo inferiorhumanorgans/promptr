@@ -54,6 +54,10 @@ impl ToSegment for CommandStatus {
     type Args = Args;
     type Theme = Theme;
 
+    fn error_context() -> &'static str {
+        "segment::CommandStatus"
+    }
+
     fn to_segment(
         _args: Option<Self::Args>,
         state: &ApplicationState,

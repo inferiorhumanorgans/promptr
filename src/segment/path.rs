@@ -2,7 +2,7 @@
 use std::path::Component;
 use std::str::FromStr;
 
-use anyhow::{anyhow, Context};
+use anyhow::anyhow;
 use itertools::{Itertools, Position};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -10,8 +10,6 @@ use serde::{Deserialize, Serialize};
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
 use crate::{ApplicationState, Separator};
-
-static SEGMENT_CONTEXT : &'static str = "segment::Path";
 
 pub struct Path {}
 
@@ -80,6 +78,10 @@ impl ToSegment for Path {
     type Args = Args;
     type Theme = Theme;
 
+    fn error_context() -> &'static str {
+        "segment::Path"
+    }
+
     fn to_segment(
         args: Option<Self::Args>,
         state: &ApplicationState,
@@ -91,20 +93,18 @@ impl ToSegment for Path {
         let path = state
             .env
             .get("PWD")
-            .ok_or_else(|| anyhow!("Couldn't determine current directory, $PWD not set"))
-            .context(SEGMENT_CONTEXT)?
+            .ok_or_else(|| anyhow!("Couldn't determine current directory, $PWD not set"))?
             .to_string();
         let home_dir = state
             .env
             .get("HOME")
-            .ok_or_else(|| anyhow!("Couldn't determine home directory, $HOME not set"))
-            .context(SEGMENT_CONTEXT)?
+            .ok_or_else(|| anyhow!("Couldn't determine home directory, $HOME not set"))?
             .to_string();
-        let home_regex = Regex::new(format!("^{}", home_dir).as_str()).context(SEGMENT_CONTEXT)?;
+        let home_regex = Regex::new(format!("^{}", home_dir).as_str())?;
         let path: String = home_regex
             .replace(path.as_ref(), Self::HOME_SHORTENED)
             .into();
-        let path = std::path::PathBuf::from_str(path.as_str()).context(SEGMENT_CONTEXT)?;
+        let path = std::path::PathBuf::from_str(path.as_str())?;
         let mut segments: Vec<Segment> = path
             .components()
             .with_position()

@@ -12,6 +12,7 @@
 //! * A struct named `Theme` that defines the themeable knobs.  The fields *should* be either
 //! [`String`]s or [`Color`]s.  This struct *must* implment the [`Default`] trait.
 
+use anyhow::Context;
 use serde::Deserialize;
 
 use crate::ansi::Color;
@@ -38,6 +39,8 @@ pub trait ToSegment {
     type Args;
     type Theme;
 
+    fn error_context() -> &'static str;
+
     fn to_segment(
         args: Option<Self::Args>,
         state: &ApplicationState,
@@ -59,7 +62,7 @@ pub trait ToSegment {
             None => None,
         };
 
-        Self::to_segment(args, state)
+        Self::to_segment(args, state).context(Self::error_context())
     }
 }
 

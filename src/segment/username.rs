@@ -58,6 +58,10 @@ impl ToSegment for Username {
     type Args = Args;
     type Theme = Theme;
 
+    fn error_context() -> &'static str {
+        "segment::Username"
+    }
+
     fn to_segment(
         args: Option<Self::Args>,
         state: &ApplicationState,
