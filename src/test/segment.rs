@@ -1,3 +1,4 @@
+mod command_status;
 mod hostname;
 mod paths;
 mod screen;

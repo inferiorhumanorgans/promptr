@@ -67,11 +67,18 @@ impl ToSegment for CommandStatus {
             _ => (theme.success_fg, theme.success_bg),
         };
 
+        let uid = state.env.get("uid").map_or("65535", String::as_str);
+
+        let text = match uid.parse::<u32>() {
+            Ok(0) => theme.root_indicator.clone(),
+            _ => theme.user_indicator.clone(),
+        };
+
         Ok(vec![Segment {
             bg,
             fg,
             separator: Separator::Thick,
-            text: theme.user_indicator.clone(),
+            text,
             source: "CommandStatus",
         }])
     }

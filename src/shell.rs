@@ -21,7 +21,7 @@ impl Shell {
     ///
     /// Note: `dirs -p` prints each item on the stack on a separate line, sidestepping the paths with spaces issue
     const CAPTURE_VARS: &'static str =
-        "hostname=$HOSTNAME code=$? dirs=$(dirs -p) jobs=$(jobs -p | wc -l)";
+        r#"uid="${UID}" hostname=${HOSTNAME} code=${?} dirs=$(dirs -p) jobs=$(jobs -p | wc -l)"#;
 
     /// Returns an [`anyhow::Result`] with the invoking shell or an error if the shell cannot be identified.
     pub fn get_current_shell() -> Result<Self> {
