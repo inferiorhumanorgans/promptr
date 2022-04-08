@@ -2,7 +2,7 @@
 use std::path::Component;
 use std::str::FromStr;
 
-use anyhow::anyhow;
+use anyhow::{anyhow, Context};
 use itertools::{Itertools, Position};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -89,18 +89,20 @@ impl ToSegment for Paths {
         let path = state
             .env
             .get("PWD")
-            .ok_or_else(|| anyhow!("PWD not set"))?
+            .ok_or_else(|| anyhow!("Couldn't determine current directory, $PWD not set"))
+            .context("segment::Paths")?
             .to_string();
         let home_dir = state
             .env
             .get("HOME")
-            .ok_or_else(|| anyhow!("Couldn't determine home directory"))?
+            .ok_or_else(|| anyhow!("Couldn't determine home directory, $HOME not set"))
+            .context("segment::Paths")?
             .to_string();
-        let home_regex = Regex::new(format!("^{}", home_dir).as_str()).unwrap();
+        let home_regex = Regex::new(format!("^{}", home_dir).as_str()).context("segment::Paths")?;
         let path: String = home_regex
             .replace(path.as_ref(), Self::HOME_SHORTENED)
             .into();
-        let path = std::path::PathBuf::from_str(path.as_str()).unwrap();
+        let path = std::path::PathBuf::from_str(path.as_str()).context("segment::Paths")?;
         let mut segments: Vec<Segment> = path
             .components()
             .with_position()
