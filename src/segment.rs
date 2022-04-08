@@ -69,7 +69,7 @@ pub mod command_status;
 #[cfg(feature = "segment-git")]
 pub mod git;
 pub mod hostname;
-pub mod paths;
+pub mod path;
 #[cfg(feature = "segment-rvm")]
 pub mod rvm;
 pub mod screen;
@@ -82,7 +82,7 @@ pub use command_status::CommandStatus;
 #[cfg(feature = "segment-git")]
 pub use git::Git;
 pub use hostname::Hostname;
-pub use paths::Paths;
+pub use path::Path;
 #[cfg(feature = "segment-rvm")]
 pub use rvm::Rvm;
 pub use screen::Screen;

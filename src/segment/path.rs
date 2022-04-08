@@ -11,9 +11,11 @@ use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
 use crate::{ApplicationState, Separator};
 
-pub struct Paths {}
+static SEGMENT_CONTEXT : &'static str = "segment::Path";
 
-/// Argumnts for the `Paths` segment.
+pub struct Path {}
+
+/// Arguments for the `Path` segment.
 #[derive(Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Args {
@@ -65,16 +67,16 @@ impl Default for Theme {
 
             // 📚 – *stack* of books
             dir_stack_indicator: "\u{1f4da}".into(),
-            home_dir_replacement: Paths::HOME_SHORTENED.into(),
+            home_dir_replacement: Path::HOME_SHORTENED.into(),
         }
     }
 }
 
-impl Paths {
+impl Path {
     const HOME_SHORTENED: &'static str = "~";
 }
 
-impl ToSegment for Paths {
+impl ToSegment for Path {
     type Args = Args;
     type Theme = Theme;
 
@@ -84,25 +86,25 @@ impl ToSegment for Paths {
     ) -> crate::Result<Vec<Segment>> {
         let args = args.unwrap_or_default();
 
-        let theme = &state.theme.paths;
+        let theme = &state.theme.path;
 
         let path = state
             .env
             .get("PWD")
             .ok_or_else(|| anyhow!("Couldn't determine current directory, $PWD not set"))
-            .context("segment::Paths")?
+            .context(SEGMENT_CONTEXT)?
             .to_string();
         let home_dir = state
             .env
             .get("HOME")
             .ok_or_else(|| anyhow!("Couldn't determine home directory, $HOME not set"))
-            .context("segment::Paths")?
+            .context(SEGMENT_CONTEXT)?
             .to_string();
-        let home_regex = Regex::new(format!("^{}", home_dir).as_str()).context("segment::Paths")?;
+        let home_regex = Regex::new(format!("^{}", home_dir).as_str()).context(SEGMENT_CONTEXT)?;
         let path: String = home_regex
             .replace(path.as_ref(), Self::HOME_SHORTENED)
             .into();
-        let path = std::path::PathBuf::from_str(path.as_str()).context("segment::Paths")?;
+        let path = std::path::PathBuf::from_str(path.as_str()).context(SEGMENT_CONTEXT)?;
         let mut segments: Vec<Segment> = path
             .components()
             .with_position()
@@ -114,7 +116,7 @@ impl ToSegment for Paths {
                         bg: theme.bg,
                         separator: Separator::Thin,
                         text: "/".into(),
-                        source: "Paths::First::Root",
+                        source: "Path::First::Root",
                     }),
                 },
                 Position::First(Component::Normal(p)) => {
@@ -124,7 +126,7 @@ impl ToSegment for Paths {
                             bg: theme.home_bg,
                             separator: Separator::Thick,
                             text: theme.home_dir_replacement.clone(),
-                            source: "Paths::First::Home",
+                            source: "Path::First::Home",
                         })
                     } else {
                         Some(Segment {
@@ -132,7 +134,7 @@ impl ToSegment for Paths {
                             bg: theme.bg,
                             separator: Separator::Thin,
                             text: p.to_string_lossy().into(),
-                            source: "Paths::First::Normal",
+                            source: "Path::First::Normal",
                         })
                     }
                 }
@@ -144,7 +146,7 @@ impl ToSegment for Paths {
                             bg: theme.home_bg,
                             separator: Separator::Thick,
                             text: theme.home_dir_replacement.clone(),
-                            source: "Paths::Only::Home",
+                            source: "Path::Only::Home",
                         })
                     } else {
                         Some(Segment {
@@ -152,7 +154,7 @@ impl ToSegment for Paths {
                             bg: theme.bg,
                             separator: Separator::Thick,
                             text: p.to_string_lossy().into(),
-                            source: "Paths::Only::Normal",
+                            source: "Path::Only::Normal",
                         })
                     }
                 }
@@ -161,14 +163,14 @@ impl ToSegment for Paths {
                     bg: theme.bg,
                     separator: Separator::Thin,
                     text: p.to_string_lossy().into(),
-                    source: "Paths::Middle::Normal",
+                    source: "Path::Middle::Normal",
                 }),
                 Position::Last(Component::Normal(p)) => Some(Segment {
                     fg: theme.last_fg,
                     bg: theme.last_bg,
                     separator: Separator::Thick,
                     text: p.to_string_lossy().into(),
-                    source: "Paths::Last::Normal",
+                    source: "Path::Last::Normal",
                 }),
                 _ => None,
             })
@@ -185,7 +187,7 @@ impl ToSegment for Paths {
                             bg: theme.bg,
                             separator: Separator::Thick,
                             text: format!("{} {}", dir_stack_depth, theme.dir_stack_indicator),
-                            source: "Paths::BashDirStack",
+                            source: "Path::BashDirStack",
                         },
                     );
                 }

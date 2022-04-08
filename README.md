@@ -121,6 +121,6 @@ jqi  '.theme.vcs.symbols.git = ""' "$(promptr location)/promptr.json"
 
 * `ssh` segment (badge on hostname seg?), walk the process tree and see if it ends with sshd. Note: screen appears to save the SSH env vars when you create a new screen so that's not 100% reliable.
 
-* `paths` segment: make the number of segments rendered configurable
+* `path` segment: make the number of segments rendered configurable
 
 * format the segment impls alphabetically

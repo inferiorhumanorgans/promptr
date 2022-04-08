@@ -108,8 +108,8 @@ pub struct Theme {
     /// Theme for the [`username`](`segment::username`) segment.
     pub username: segment::username::Theme,
 
-    /// Theme for the [`paths`](`segment::paths`) segment.
-    pub paths: segment::paths::Theme,
+    /// Theme for the [`path`](`segment::path`) segment.
+    pub path: segment::path::Theme,
 
     /// Theme for the [`rvm`](`segment::rvm`) segment.
     #[cfg(feature = "segment-rvm")]
@@ -132,7 +132,7 @@ impl Default for PromptrConfig {
                     args: None,
                 },
                 SegmentConfig {
-                    name: "paths".into(),
+                    name: "path".into(),
                     args: None,
                 },
                 SegmentConfig {
@@ -174,7 +174,7 @@ impl Default for Theme {
             hostname: Default::default(),
             vcs: Default::default(),
             username: Default::default(),
-            paths: Default::default(),
+            path: Default::default(),
             rvm: Default::default(),
             screen: Default::default(),
 

@@ -1,6 +1,6 @@
 mod command_status;
 mod hostname;
-mod paths;
+mod path;
 mod screen;
 mod username;
 
