@@ -69,7 +69,7 @@ struct Stats {
 }
 
 fn seg_in_progress(repo: &Repository, args: &Args, theme: &VcsTheme, segments: &mut Vec<Segment>) {
-    if args.show_in_progress {
+    if args.show_in_progress == false {
         return;
     }
 
