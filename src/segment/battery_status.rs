@@ -94,7 +94,10 @@ impl ToSegment for BatteryStatus {
         let theme = &state.theme.battery;
 
         let manager = battery::Manager::new()?;
-        let battery = manager.batteries()?.next().ok_or_else(|| anyhow!("battery status unwrapping nightmare"))??;
+        let battery = manager
+            .batteries()?
+            .next()
+            .ok_or_else(|| anyhow!("battery status unwrapping nightmare"))??;
         let state_of_charge = battery.state_of_charge().value * 100.0;
 
         let seg = match battery.state() {

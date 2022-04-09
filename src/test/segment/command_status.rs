@@ -3,8 +3,7 @@ use crate::test::segment::declare_segement_test;
 use crate::test::AppEnv;
 use crate::{ApplicationState, Theme};
 
-declare_segement_test!([
-]);
+declare_segement_test!([]);
 
 segment_test! {
     fn no_exit_status_non_priv() {

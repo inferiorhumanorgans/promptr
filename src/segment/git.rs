@@ -140,21 +140,28 @@ fn seg_ahead_behind(
     segments: &mut Vec<Segment>,
 ) -> Result<()> {
     if repo.head_detached()? {
-        return Ok(())
+        return Ok(());
     }
 
     let head = repo.head()?;
 
-    let head_name = head.shorthand().ok_or_else(|| anyhow!("couldn't get a shorthand version of head"))?;
+    let head_name = head
+        .shorthand()
+        .ok_or_else(|| anyhow!("couldn't get a shorthand version of head"))?;
 
     let head_branch = repo.find_branch(head_name, BranchType::Local)?;
 
-    let head_oid = head.target().ok_or_else(|| anyhow!("couldn't find head -> target"))?;
+    let head_oid = head
+        .target()
+        .ok_or_else(|| anyhow!("couldn't find head -> target"))?;
 
     // On error: no upstream to track so we can't generate meaningful info.
     let upstream_branch = head_branch.upstream()?;
 
-    let upstream_oid = upstream_branch.get().target().ok_or_else(|| anyhow!("couldn't find upstream oid"))?;
+    let upstream_oid = upstream_branch
+        .get()
+        .target()
+        .ok_or_else(|| anyhow!("couldn't find upstream oid"))?;
 
     if let Ok((ahead, behind)) = repo.graph_ahead_behind(head_oid, upstream_oid) {
         let first_separator = if ahead > 0 && behind > 0 {
@@ -285,7 +292,11 @@ fn seg_current_branch(
         bg,
         fg,
         separator: Separator::Thick,
-        text: format!("{} {}", theme.symbols.git, head.unwrap_or("HEAD (no branch)")),
+        text: format!(
+            "{} {}",
+            theme.symbols.git,
+            head.unwrap_or("HEAD (no branch)")
+        ),
         source: "Git::Branch",
     });
 

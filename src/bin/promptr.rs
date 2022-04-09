@@ -144,7 +144,7 @@ pub fn load_segments(config: PromptrConfig) -> Result<impl Iterator<Item = Segme
             #[cfg(feature = "segment-git")]
             "git" => segment::Git::to_segment_generic(args, &state),
 
-            seg => Err(anyhow!("Unknown segment: {}", seg))
+            seg => Err(anyhow!("Unknown segment: {}", seg)),
         })
         .filter_map(|segment_result| match segment_result {
             Ok(unflat_segments) => Some(unflat_segments),
@@ -228,15 +228,26 @@ fn main() -> Result<()> {
         }
         Commands::DefaultConfig => {
             let config = PromptrConfig::default();
-            println!("{}", serde_json::to_string_pretty(&config).expect("Error turning configuration into JSON"));
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&config)
+                    .expect("Error turning configuration into JSON")
+            );
         }
         Commands::CurrentConfig => {
             let config = load_config(true);
 
-            println!("{}", serde_json::to_string_pretty(&config).expect("Error turning configuration into JSON"));
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&config)
+                    .expect("Error turning configuration into JSON")
+            );
         }
         Commands::Location => match config_dir() {
-            Ok(dir) => println!("{}", dir.to_str().expect("non UTF-8 paths are no supported")),
+            Ok(dir) => println!(
+                "{}",
+                dir.to_str().expect("non UTF-8 paths are no supported")
+            ),
             Err(_) => eprintln!("I couldn't find a good place to keep my configuration files."),
         },
     }
