@@ -16,12 +16,12 @@
 //!     + if [`args.force_show`][`Args`] is `true`, always print `rvm`
 //!     + Otherwise search for a file named `Gemfile` in the current and ancestor directories
 //!         + Stop if we reach `$HOME`
-//!         + Stop if we reach `rvm_path` (ew)
+//!         + Stop if we reach `rvm_path` (eww)
 //!         + Stop if we find `Gemfile`
 //! * Recurse through our ancestors looking for `.ruby-version`
 //! * `$GEM_HOME` defines where the current gemset lives.  Subtract `$rvm_path` to get the name.  Parse it as an actual [`semver::Version`]
 //! * If `.ruby-version` exists parse it with the version as a [`semver::VersionReq`]
-//!     + Ensure that the requesetd and actual / current interpreters match
+//!     + Ensure that the requested and actual / current interpreters match
 //!     + The requested and actual / current versions match
 //!     + TODO: check the gemsets
 //! * If `.ruby-version` (requested) doesn't match `$GEM_HOME` (actual / current)

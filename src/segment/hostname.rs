@@ -1,4 +1,4 @@
-//! The `Hostname` segment diplays the system hostname
+//! The `Hostname` segment displays the system hostname
 
 use anyhow::anyhow;
 use serde::{Deserialize, Serialize};

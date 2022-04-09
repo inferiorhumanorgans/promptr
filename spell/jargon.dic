@@ -1,0 +1,54 @@
+41
+# Rust software packages
+serde
+promptr
+# Other software
+Bitbucket
+RVM
+rvm
+RPython
+GraalVM
+truffleruby
+Rubinius
+rbx
+mruby
+GemStone
+VMware/M
+maglev
+macruby
+jruby
+ironruby
+# Operating systems
+FreeBSD
+OpenBSD
+macOS
+# Generic terms
+config
+subcommand
+init
+repo
+untracked
+hostname
+emoji
+performant
+username
+stderr
+recurse
+VM
+deserialize
+untyped
+themeable
+eww
+# Acronyms
+JSON
+TODO
+SGR
+# Rust terms
+struct/S
+impl
+# Ruby terms
+gemset/S
+rubie
+# Git terms
+rebase
+unstaged

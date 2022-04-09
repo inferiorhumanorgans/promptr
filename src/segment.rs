@@ -10,7 +10,7 @@
 //! `default` and *should* set the `deny_unknown_fields` Serde options.  It *must* implement the
 //! `Default` trait or bad things will happen with config file processing.
 //! * A struct named `Theme` that defines the themeable knobs.  The fields *should* be either
-//! [`String`]s or [`Color`]s.  This struct *must* implment the [`Default`] trait.
+//! [`String`]s or [`Color`]s.  This struct *must* implement the [`Default`] trait.
 
 use anyhow::Context;
 use serde::Deserialize;

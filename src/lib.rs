@@ -64,7 +64,7 @@ pub struct PromptrConfig {
     pub theme: Theme,
 }
 
-/// This represents a stanza in the config file that describes a sgement. The `args` field is typed
+/// This represents a stanza in the config file that describes a segment. The `args` field is typed
 /// specifically for each segment, and each segment implements `serde(default)` so you only need to
 /// specify the fields you wish to override.
 #[derive(Deserialize, Debug, Serialize)]

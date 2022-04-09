@@ -1,0 +1,7 @@
+[Hunspell]
+# lang and name of `.dic` file
+lang = "en_US"
+skip_os_lookups = true
+use_builtin = true
+search_dirs = [ "../spell" ]
+extra_dictionaries = [ "jargon.dic" ]
