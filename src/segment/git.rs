@@ -9,6 +9,8 @@
 //! * in-progress action (e.g. rebase, merge, cherry pick)
 //! * stash count
 
+use std::fs::read_to_string;
+
 use anyhow::{anyhow, Result};
 use git2::{BranchType, ErrorCode, Repository, RepositoryState, StatusOptions};
 use serde::Deserialize;
@@ -69,7 +71,7 @@ struct Stats {
 }
 
 fn seg_in_progress(repo: &Repository, args: &Args, theme: &VcsTheme, segments: &mut Vec<Segment>) {
-    if args.show_in_progress == false {
+    if !args.show_in_progress {
         return;
     }
 
@@ -99,16 +101,31 @@ fn seg_in_progress(repo: &Repository, args: &Args, theme: &VcsTheme, segments: &
             text: "merge".to_string(),
             source: "Git::Merge",
         }),
-        RepositoryState::Rebase
-        | RepositoryState::RebaseInteractive
-        | RepositoryState::RebaseMerge
+        state @ RepositoryState::Rebase
+        | state @ RepositoryState::RebaseInteractive
+        | state @ RepositoryState::RebaseMerge
             if args.show_rebase =>
         {
+            let text = match state {
+                RepositoryState::RebaseInteractive => {
+                    // Well this is annoying
+                    // https://github.com/libgit2/libgit2/issues/6127
+                    let total_cmds = read_to_string(repo.path().join("rebase-merge/end")).unwrap();
+                    let completed_cmds =
+                        read_to_string(repo.path().join("rebase-merge/msgnum")).unwrap();
+                    let total_cmds: usize = total_cmds.trim_end_matches('\n').parse().unwrap();
+                    let completed_cmds: usize =
+                        completed_cmds.trim_end_matches('\n').parse().unwrap();
+                    format!("int rebase {}/{}", completed_cmds, total_cmds)
+                }
+                _ => "rebase".into(),
+            };
+
             segments.push(Segment {
                 fg: theme.git_in_progress_fg,
                 bg: theme.git_in_progress_bg,
                 separator: Separator::Thick,
-                text: "rebase".to_string(),
+                text,
                 source: "Git::Rebase",
             })
         }
@@ -122,11 +139,14 @@ fn seg_ahead_behind(
     theme: &VcsTheme,
     segments: &mut Vec<Segment>,
 ) -> Result<()> {
+    if repo.head_detached()? {
+        return Ok(())
+    }
+
     let head = repo.head()?;
 
     let head_name = head.shorthand().ok_or_else(|| anyhow!("couldn't get a shorthand version of head"))?;
 
-    // Likely a detached head if we error out.  Rebase?
     let head_branch = repo.find_branch(head_name, BranchType::Local)?;
 
     let head_oid = head.target().ok_or_else(|| anyhow!("couldn't find head -> target"))?;
