@@ -1,6 +1,4 @@
 //! The `Username` segment displays the current username and provides a `sudo` indicator
-//!
-//! **TODO** check `${SUDO_UID}` to determine if we're being run in a `sudo` context
 
 use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
@@ -11,11 +9,15 @@ use crate::{ApplicationState, Separator};
 
 pub struct Username {}
 
+/// The format in which we would like sudo shells to be represented
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SudoIndicator {
+    /// `≈ effective_user`
     Symbol,
+    /// `user → effective user`
     Username,
+    /// `effective_user`
     None,
 }
 
@@ -31,7 +33,11 @@ pub struct Theme {
     pub fg: Color,
     pub bg: Color,
 
+    /// Prefix to the username if `Args.sudo_indicator` is set to `Symbol`
     pub sudo_indicator: String,
+
+    /// Separator between the user and effective user if `Args.sudo_indicator` is set to `Username`
+    pub sudo_separator: String,
 }
 
 impl Default for Args {
@@ -50,6 +56,8 @@ impl Default for Theme {
 
             // ≈ pseudo… almost equal
             sudo_indicator: "\u{2248}".into(),
+            // user → effective user
+            sudo_separator: "\u{2192}".into(),
         }
     }
 }
@@ -76,18 +84,17 @@ impl ToSegment for Username {
             .ok_or_else(|| anyhow!("$USER not set"))?
             .to_string();
 
-        let sudo_user = state.env
-            .get("SUDO_USER");
+        let sudo_user = state.env.get("SUDO_USER");
 
         let text = match sudo_user {
             None => effective_user,
-            Some(sudo_user) => {
-                match args.sudo_indicator {
-                    SudoIndicator::None => effective_user,
-                    SudoIndicator::Symbol => format!("{}{}", theme.sudo_indicator, effective_user),
-                    SudoIndicator::Username => format!("{} \u{2192} {}", sudo_user, effective_user),
+            Some(sudo_user) => match args.sudo_indicator {
+                SudoIndicator::None => effective_user,
+                SudoIndicator::Symbol => format!("{}{}", theme.sudo_indicator, effective_user),
+                SudoIndicator::Username => {
+                    format!("{} {} {}", sudo_user, theme.sudo_separator, effective_user)
                 }
-            }
+            },
         };
 
         Ok(vec![Segment {
