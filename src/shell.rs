@@ -27,9 +27,11 @@ impl Shell {
     pub fn get_current_shell() -> Result<Self> {
         let shell: String = env::var("PROMPTR_SHELL")
             .or_else::<anyhow::Error, _>(|_| {
-                let shell_via_parent = crate::ffi::get_process_name(std::os::unix::process::parent_id() as u64);
+                // pid_t is u32 in rust but POSIX defies it as a signed integer…
+                let shell_via_parent =
+                    crate::ffi::get_process_name(std::os::unix::process::parent_id() as i64);
                 match shell_via_parent {
-                    _ if shell_via_parent.is_empty()  => Err(anyhow!("Couldn't determine shell")),
+                    _ if shell_via_parent.is_empty() => Err(anyhow!("Couldn't determine shell")),
                     shell => Ok(shell),
                 }
             })
@@ -44,7 +46,10 @@ impl Shell {
 
         match shell.as_str() {
             "bash" => Ok(Shell::Bash),
-            other_shell => Err(anyhow!("This shell is incompatible with promptr: {}", other_shell)),
+            other_shell => Err(anyhow!(
+                "This shell is incompatible with promptr: {}",
+                other_shell
+            )),
         }
     }
 
