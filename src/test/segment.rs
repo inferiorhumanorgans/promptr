@@ -4,6 +4,7 @@ mod path;
 mod screen;
 mod username;
 
+/// Expand a JSON string literal into a strongly typed object or None if we pass None.
 macro_rules! test_args {
     (None) => {
         None
@@ -24,6 +25,9 @@ macro_rules! with_dollar_sign {
 }
 pub(crate) use with_dollar_sign;
 
+/// Meta macros at their meatiest. Use this to define macros that create a default environment
+/// for test instances.  This doesn't namespace or even come up with creative names for anything
+/// so this only works once per scope.
 macro_rules! declare_segement_test {
     ([ $(($key:literal, $value:literal),)* ]) => {
         crate::test::segment::with_dollar_sign!{

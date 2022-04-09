@@ -51,7 +51,6 @@ segment_test! {
     }
 }
 
-
 segment_test! {
     fn exit_success_priv() {
         |args, mut state : ApplicationState| {
@@ -83,4 +82,3 @@ segment_test! {
         }
     }
 }
-
