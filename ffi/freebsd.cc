@@ -8,11 +8,18 @@
 #include <strings.h>
 #include <unistd.h>
 
+#include <limits>
+
 #include "rust/cxx.h"
 
 #define BUF_LEN 255
 
-rust::String get_process_name(uint64_t pid) {
+rust::String get_process_name(int64_t pid) {
+    if (pid > std::numeric_limits<pid_t>::max()) {
+        // Should probably print an error or something
+        return std::string();
+    }
+
     std::string ret_str;
     struct procstat *prstat = procstat_open_sysctl();
     unsigned int count = 0;

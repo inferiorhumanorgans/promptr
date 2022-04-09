@@ -14,7 +14,7 @@ use std::fmt::{self, Display};
 mod ffi {
     unsafe extern "C++" {
         include!("promptr/ffi/ffi.h");
-        fn get_process_name(pid: u64) -> String;
+        fn get_process_name(pid: i64) -> String;
     }
 }
 

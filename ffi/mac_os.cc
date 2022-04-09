@@ -2,11 +2,19 @@
 #include <strings.h>
 #include <unistd.h>
 
+#include <limits>
+
 #include "rust/cxx.h"
 
 #define BUF_LEN 256
 
-rust::String get_process_name(uint64_t pid) {
+rust::String get_process_name(int64_t pid) {
+    // https://stackoverflow.com/questions/12841488/how-can-i-determine-the-maximum-value-of-a-pid-t
+    if (pid > std::numeric_limits<pid_t>::max()) {
+        // Should probably print an error or something
+        return std::string();
+    }
+
     char buf[BUF_LEN];
     bzero(buf, BUF_LEN);
 
