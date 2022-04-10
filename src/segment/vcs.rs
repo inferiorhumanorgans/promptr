@@ -18,6 +18,7 @@ pub struct Symbols {
     pub stash: String,
 
     pub git: String,
+    pub cherry_pick: String,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
@@ -78,6 +79,8 @@ impl Default for Symbols {
 
             //  – ?
             git: "\u{e0a0}".into(),
+            // 🍒 - duh
+            cherry_pick: "\u{1f352}".into(),
         }
     }
 }

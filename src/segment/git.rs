@@ -90,7 +90,7 @@ fn seg_in_progress(repo: &Repository, args: &Args, theme: &VcsTheme, segments: &
                 fg: theme.git_in_progress_fg,
                 bg: theme.git_in_progress_bg,
                 separator: Separator::Thick,
-                text: "🍒".to_string(),
+                text: theme.symbols.cherry_pick.clone(),
                 source: "Git::CherryPick",
             })
         }
