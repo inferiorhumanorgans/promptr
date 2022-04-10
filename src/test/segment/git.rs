@@ -32,6 +32,7 @@ fn get_testcase_from_tarball(name: &'static str, state: &mut ApplicationState) -
 }
 
 segment_test! {
+    #[ignore = "libgit2 doesn't support unborn branches"]
     fn empty_git_repo() {
         |args, mut state : ApplicationState| {
             let _temp_dir = get_testcase_from_tarball("empty", &mut state);
