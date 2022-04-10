@@ -11,7 +11,7 @@
 
 use std::fs::read_to_string;
 
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Context, Result};
 use git2::{BranchType, ErrorCode, Repository, RepositoryState, StatusOptions};
 use serde::Deserialize;
 
@@ -143,7 +143,11 @@ fn seg_ahead_behind(
         return Ok(());
     }
 
-    let head = repo.head()?;
+    let head = match repo.head() {
+        Ok(head) => head,
+        // This seems like the wrong way to do things, but in a repo with no commits this is normal
+        Err(_) => return Ok(())
+    };
 
     let head_name = head
         .shorthand()
@@ -155,7 +159,8 @@ fn seg_ahead_behind(
         .target()
         .ok_or_else(|| anyhow!("couldn't find head -> target"))?;
 
-    // On error: no upstream to track so we can't generate meaningful info.
+    // On error: no upstream to track so we can't generate meaningful info.  But this is perfectly
+    // normal on a new repo.
     let upstream_branch = match head_branch.upstream() {
         Ok(upstream_branch) => upstream_branch,
         Err(_) => return Ok(()),
@@ -406,9 +411,14 @@ impl ToSegment for Git {
             stashed,
         };
 
-        // TODO: We should really print out the segments we can on STDOUT and the errors on STDERR
-        seg_current_branch(&repo, &stats, &args, &state.theme.vcs, &mut segments)?;
-        seg_ahead_behind(&repo, &args, &state.theme.vcs, &mut segments)?;
+        seg_current_branch(&repo, &stats, &args, &state.theme.vcs, &mut segments)
+            .context("seg_current_branch")
+            .map_err(|err| eprintln!("Error in promptr: {:?}", err))
+            .ok();
+        seg_ahead_behind(&repo, &args, &state.theme.vcs, &mut segments)
+            .context("seg_ahead_behind")
+            .map_err(|err| eprintln!("Error in promptr: {:?}", err))
+            .ok();
         seg_in_progress(&repo, &args, &state.theme.vcs, &mut segments);
         seg_staged(&repo, &stats, &args, &state.theme.vcs, &mut segments);
         seg_changed(&repo, &stats, &args, &state.theme.vcs, &mut segments);
