@@ -1,7 +1,7 @@
 //! The `Username` segment displays the current username and provides a `sudo` indicator
 
 use anyhow::anyhow;
-use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
+use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};

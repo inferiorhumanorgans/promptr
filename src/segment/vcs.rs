@@ -1,6 +1,6 @@
 //! There are no segments here, just theme related structs.
 
-use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
+use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 
 use crate::ansi::Color;
 use promptr_macros::SerializeNonDefault;

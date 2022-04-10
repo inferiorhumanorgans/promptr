@@ -1,7 +1,7 @@
 //! The `BatteryStatus` segment shows current state-of-charge and charging status, if applicable
 use anyhow::anyhow;
 use battery::State as BatteryState;
-use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
+use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};

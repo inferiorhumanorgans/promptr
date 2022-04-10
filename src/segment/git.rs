@@ -8,7 +8,7 @@
 //! * untracked items count
 //! * in-progress action (e.g. rebase, merge, cherry pick)
 //! * stash count
-//! 
+//!
 //! For information about the tests see the README in git-tests/
 
 use std::fs::read_to_string;
@@ -148,7 +148,7 @@ fn seg_ahead_behind(
     let head = match repo.head() {
         Ok(head) => head,
         // This seems like the wrong way to do things, but in a repo with no commits this is normal
-        Err(_) => return Ok(())
+        Err(_) => return Ok(()),
     };
 
     let head_name = head
@@ -167,7 +167,7 @@ fn seg_ahead_behind(
         Ok(upstream_branch) => upstream_branch,
         Err(_) => return Ok(()),
     };
-    
+
     let upstream_oid = upstream_branch
         .get()
         .target()
@@ -294,19 +294,19 @@ fn seg_current_branch(
             let head_ref = read_to_string(repo.path().join("rebase-merge/head-name")).unwrap();
             let head_ref = head_ref.trim_end_matches('\n');
             let head_ref = repo.find_reference(head_ref)?;
-            Some(
-                head_ref.shorthand().unwrap().to_owned()
-            )
-        },
+            Some(head_ref.shorthand().unwrap().to_owned())
+        }
         _ => {
             let head = match repo.head() {
                 Ok(head) => Some(head),
-                Err(ref e) if e.code() == ErrorCode::UnbornBranch || e.code() == ErrorCode::NotFound => {
+                Err(ref e)
+                    if e.code() == ErrorCode::UnbornBranch || e.code() == ErrorCode::NotFound =>
+                {
                     None
                 }
                 Err(e) => Err(e)?,
             };
-        
+
             head.as_ref().and_then(|h| h.shorthand()).map(str::to_owned)
         }
     };
@@ -366,8 +366,11 @@ impl ToSegment for Git {
         // Unfortunately we have to stub things out like this as rust runs all tests in a module
         // from a single process.
         #[cfg(test)]
-        let repo_path = state.env.get("__PROMPTR_GIT_REPO").expect("gotta set __PROMPTR_GIT_REPO to run tests");
-        
+        let repo_path = state
+            .env
+            .get("__PROMPTR_GIT_REPO")
+            .expect("gotta set __PROMPTR_GIT_REPO to run tests");
+
         #[cfg(not(test))]
         let repo_path = ".";
 

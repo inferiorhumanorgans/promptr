@@ -5,7 +5,7 @@ use std::str::FromStr;
 use anyhow::anyhow;
 use itertools::{Itertools, Position};
 use regex::Regex;
-use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
+use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};

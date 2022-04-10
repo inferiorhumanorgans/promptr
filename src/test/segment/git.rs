@@ -24,7 +24,9 @@ fn get_testcase_from_tarball(name: &'static str, state: &mut ApplicationState) -
     tarball.unpack(&temp_dir).unwrap();
 
     let repo_path = temp_dir.path().join(name).to_string_lossy().into();
-    state.env.insert(String::from("__PROMPTR_GIT_REPO"), repo_path);
+    state
+        .env
+        .insert(String::from("__PROMPTR_GIT_REPO"), repo_path);
 
     temp_dir
 }
@@ -39,9 +41,9 @@ segment_test! {
                 let mut theme = state.theme.clone();
                 theme.vcs.symbols.git = "".to_string();
                 state.theme = &theme;
-    
+
                 let segments = Git::to_segment_generic(args, &state).unwrap();
-    
+
                 assert_eq!(1, segments.len());
 
                 assert_eq!(
@@ -69,9 +71,9 @@ segment_test! {
                 let mut theme = state.theme.clone();
                 theme.vcs.symbols.git = "".to_string();
                 state.theme = &theme;
-    
+
                 let segments = Git::to_segment_generic(args, &state).unwrap();
-    
+
                 assert_eq!(2, segments.len());
 
                 assert_eq!(
@@ -84,7 +86,7 @@ segment_test! {
                     },
                     segments[0]
                 );
-                
+
                 assert_eq!(
                     crate::segment::Segment {
                         bg: theme.vcs.git_untracked_bg,
@@ -112,7 +114,7 @@ segment_test! {
                 state.theme = &theme;
 
                 let segments = Git::to_segment_generic(args, &state).unwrap();
-    
+
                 eprintln!("Segments: {:#?}", segments);
                 assert_eq!(2, segments.len());
 
@@ -126,7 +128,7 @@ segment_test! {
                     },
                     segments[0]
                 );
-                
+
                 assert_eq!(
                     crate::segment::Segment {
                         bg: theme.vcs.git_in_progress_bg,
@@ -155,7 +157,7 @@ segment_test! {
                 state.theme = &theme;
 
                 let segments = Git::to_segment_generic(args, &state).unwrap();
-    
+
                 eprintln!("Segments: {:#?}", segments);
                 assert_eq!(2, segments.len());
 
@@ -169,7 +171,7 @@ segment_test! {
                     },
                     segments[0]
                 );
-                
+
                 assert_eq!(
                     crate::segment::Segment {
                         bg: theme.vcs.git_in_progress_bg,

@@ -7,7 +7,7 @@
 //! <https://unix.stackexchange.com/questions/81923/gnu-screen-doesnt-echo-unicode-characters-correct#answer-605566>
 
 use anyhow::anyhow;
-use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
+use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};

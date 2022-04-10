@@ -4,7 +4,7 @@
 //! information about what to place in your configuration files this is the place.  For usage
 //! and installation information check the `promptr` documentation.
 
-use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
+use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 
 use std::collections::HashMap;
 use std::fmt::{self, Display};

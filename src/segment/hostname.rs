@@ -1,7 +1,7 @@
 //! The `Hostname` segment displays the system hostname
 
 use anyhow::anyhow;
-use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
+use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 
 #[cfg(target_os = "freebsd")]
 use sysctl::{Ctl, Sysctl};
