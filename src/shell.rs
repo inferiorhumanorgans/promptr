@@ -28,8 +28,12 @@ impl Shell {
         let shell: String = env::var("PROMPTR_SHELL")
             .or_else::<anyhow::Error, _>(|_| {
                 // pid_t is u32 in rust but POSIX defies it as a signed integer…
+                #[cfg(any(target_os = "macos", target_os = "freebsd"))]
                 let shell_via_parent =
                     crate::ffi::get_process_name(std::os::unix::process::parent_id() as i64);
+                #[cfg(not(any(target_os = "macos", target_os = "freebsd")))]
+                let shell_via_parent = "bash".to_string();
+
                 match shell_via_parent {
                     _ if shell_via_parent.is_empty() => Err(anyhow!("Couldn't determine shell")),
                     shell => Ok(shell),
