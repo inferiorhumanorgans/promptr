@@ -156,8 +156,11 @@ fn seg_ahead_behind(
         .ok_or_else(|| anyhow!("couldn't find head -> target"))?;
 
     // On error: no upstream to track so we can't generate meaningful info.
-    let upstream_branch = head_branch.upstream()?;
-
+    let upstream_branch = match head_branch.upstream() {
+        Ok(upstream_branch) => upstream_branch,
+        Err(_) => return Ok(()),
+    };
+    
     let upstream_oid = upstream_branch
         .get()
         .target()
