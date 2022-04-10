@@ -1,7 +1,7 @@
 //! The `Hostname` segment displays the system hostname
 
 use anyhow::anyhow;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
 
 #[cfg(target_os = "freebsd")]
 use sysctl::{Ctl, Sysctl};
@@ -9,6 +9,7 @@ use sysctl::{Ctl, Sysctl};
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
 use crate::{ApplicationState, Separator};
+use promptr_macros::SerializeNonDefault;
 
 pub struct Hostname {}
 
@@ -20,7 +21,7 @@ pub struct Args {
     pub show_os_indicator: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     /// Foreground color

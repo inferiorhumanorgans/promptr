@@ -26,12 +26,6 @@ struct TopLevelArgs {
 #[doc(hidden)]
 #[derive(Subcommand, PartialEq)]
 enum Commands {
-    /// Prints out the shell commands required to load and enable
-    /// promptr for the first run.
-    ///
-    /// From a bash instance run: source <(promptr init)
-    Init,
-
     /// Print the current state of a segment.
     ///
     /// This command takes one argument: the index of a segment to display.  Running this command
@@ -42,13 +36,12 @@ enum Commands {
     /// Print the current configuration as JSON
     CurrentConfig,
 
-    /// Print the default configuration in all its glory
-    DefaultConfig,
-
     /// Print the location of the configuration directory
     Location,
 
-    /// Same as init but without attempting to create/copy a default config file
+    /// Prints out the shell commands required to load promptr
+    ///
+    /// From a bash instance run: source <(promptr load)
     Load,
 
     /// This subcommand generates the prompt displayed by the command shell.  Don't call directly
@@ -169,7 +162,6 @@ fn main() -> Result<()> {
     let shell = Shell::get_current_shell()?;
 
     match args.command {
-        Commands::Init => shell.generate_init(&self_exe),
         Commands::Load => shell.generate_loader(&self_exe),
         Commands::Prompt => {
             let config = load_config(false);
@@ -225,14 +217,6 @@ fn main() -> Result<()> {
                 Some(seg) => eprintln!("{:#?}", seg),
                 None => eprintln!("Segment not found, count={}", segments.len()),
             }
-        }
-        Commands::DefaultConfig => {
-            let config = PromptrConfig::default();
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&config)
-                    .expect("Error turning configuration into JSON")
-            );
         }
         Commands::CurrentConfig => {
             let config = load_config(true);

@@ -1,11 +1,12 @@
 //! The `Username` segment displays the current username and provides a `sudo` indicator
 
 use anyhow::anyhow;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
 use crate::{ApplicationState, Separator};
+use promptr_macros::SerializeNonDefault;
 
 pub struct Username {}
 
@@ -27,7 +28,7 @@ pub struct Args {
     pub sudo_indicator: SudoIndicator,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     pub fg: Color,

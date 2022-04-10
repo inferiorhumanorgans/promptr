@@ -7,11 +7,12 @@
 //! <https://unix.stackexchange.com/questions/81923/gnu-screen-doesnt-echo-unicode-characters-correct#answer-605566>
 
 use anyhow::anyhow;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
 use crate::{ApplicationState, Separator};
+use promptr_macros::SerializeNonDefault;
 
 pub struct Screen {}
 
@@ -26,7 +27,7 @@ pub struct Args {
     pub show_window_number: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     /// Foreground color

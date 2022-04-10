@@ -5,11 +5,12 @@ use std::str::FromStr;
 use anyhow::anyhow;
 use itertools::{Itertools, Position};
 use regex::Regex;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
 use crate::{ApplicationState, Separator};
+use promptr_macros::SerializeNonDefault;
 
 pub struct Path {}
 
@@ -24,7 +25,7 @@ pub struct Args {
     pub show_dir_stack: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     pub fg: Color,

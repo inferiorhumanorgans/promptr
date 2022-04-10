@@ -4,10 +4,12 @@
 //! information about what to place in your configuration files this is the place.  For usage
 //! and installation information check the `promptr` documentation.
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
 
 use std::collections::HashMap;
 use std::fmt::{self, Display};
+
+use promptr_macros::SerializeNonDefault;
 
 #[cfg(any(target_os = "macos", target_os = "freebsd"))]
 #[cxx::bridge]
@@ -60,7 +62,7 @@ pub struct PromptrConfig {
     /// ```
     ///
     /// In this case `bg` is a [`Color`](`ansi::Color`) object which can be represented by an integer.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub theme: Theme,
 }
 
@@ -88,7 +90,7 @@ pub enum Separator {
 /// Contains colors for the active theme.
 ///
 /// All fields implement `serde(default)` and are thus optional.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     /// Theme for the [`battery_status`](`segment::battery_status`) segment.
@@ -119,6 +121,17 @@ pub struct Theme {
     pub screen: segment::screen::Theme,
 
     pub thin_separator_fg: ansi::Color,
+}
+
+/// For use with `serde`'s `skip_serializing_if` field attribute
+///
+/// This checks the value against the default for the type by calling `Default::default()`.  For
+/// structs where we want to check a large number of fields it's probably more efficient to use
+/// [`SerializeNonDefault`](`promptr_macros::SerializeNonDefault`) so that we only instantiate one
+/// default object.
+fn is_default<T: Default + PartialEq>(maybe: &T) -> bool {
+    let default = T::default();
+    maybe == &default
 }
 
 impl Default for PromptrConfig {

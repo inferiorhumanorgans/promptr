@@ -1,10 +1,11 @@
 //! There are no segments here, just theme related structs.
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
 
 use crate::ansi::Color;
+use promptr_macros::SerializeNonDefault;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Symbols {
     pub detached: String,
@@ -19,7 +20,7 @@ pub struct Symbols {
     pub git: String,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     pub git_ahead_fg: Color,

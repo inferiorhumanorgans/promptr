@@ -525,11 +525,20 @@ dependencies = [
  "git2",
  "indoc",
  "itertools",
+ "promptr-macros",
  "regex",
  "semver",
  "serde",
  "serde_json",
  "sysctl",
+]
+
+[[package]]
+name = "promptr-macros"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
 ]
 
 [[package]]

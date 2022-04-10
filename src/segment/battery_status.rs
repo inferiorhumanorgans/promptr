@@ -1,11 +1,12 @@
 //! The `BatteryStatus` segment shows current state-of-charge and charging status, if applicable
 use anyhow::anyhow;
 use battery::State as BatteryState;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
 use crate::{ApplicationState, Separator};
+use promptr_macros::SerializeNonDefault;
 
 pub struct BatteryStatus {}
 
@@ -22,7 +23,7 @@ pub struct Args {
 /// TODO: Make the low threshold configurable
 /// TODO: Add a third color band
 /// TODO: Encode battery health state?
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     /// Foreground color when the battery is ≥ 50% state-of-charge

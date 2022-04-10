@@ -9,6 +9,11 @@ license = "GPL-3.0-or-later"
 [lib]
 name = "libpromptr"
 
+[workspace]
+members = [
+    "promptr-macros"
+]
+
 [dependencies]
 anyhow = "1.0"
 battery = { version = "0.7.8", optional = true }
@@ -17,6 +22,7 @@ directories = "4.0"
 git2 = { version = "0.14", optional = true }
 indoc = "1.0"
 itertools = "0.10"
+promptr-macros = { path = "promptr-macros" }
 regex = "1"
 semver = { version = "1.0.7", optional = true }
 serde = { version = "1.0", features = ["derive"] }

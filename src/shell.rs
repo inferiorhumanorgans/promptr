@@ -53,48 +53,6 @@ impl Shell {
         }
     }
 
-    /// Prints out the initialization code for the selected shell.
-    pub fn generate_init(&self, self_exe: &str) {
-        match self {
-            Self::Bash => {
-                println!(
-                    indoc!(
-                    r##"
-                        if [[ $- == *i* ]]; then
-                            promptr_conf_dir=$({promptr} location)
-                            promptr_conf_file="${{promptr_conf_dir}}/promptr.json"
-
-                            if [ ! -d "${{promptr_conf_dir}}" ]; then
-                                echo "Creating default configuration directory"
-                                mkdir "${{promptr_conf_dir}}"
-                            fi
-
-                            if [ ! -f "${{promptr_conf_file}}" ]; then
-                                echo "Saving default configuration to ${{promptr_conf_file}}"
-                                {promptr} current-config > "${{promptr_conf_file}}"
-                            else
-                                echo "Found an existing configuration at ${{promptr_conf_file}}"
-                            fi
-
-                            unset promptr_conf_dir
-                            unset promptr_conf_file
-
-                            PROMPT_COMMAND=promptr_prompt
-                            promptr_prompt() {{
-                                PS1="$({capture_vars} {promptr} prompt)"
-                            }}
-                        else
-                            echo "*** promptr must be run from an interactive shell ***"
-                        fi
-                    "##
-                    ),
-                    capture_vars = Self::CAPTURE_VARS,
-                    promptr = self_exe,
-                )
-            }
-        }
-    }
-
     pub fn generate_loader(&self, self_exe: &str) {
         match self {
             Self::Bash => {

@@ -1,10 +1,11 @@
 //! The `CommandStatus` segment displays the root / non-privileged indicator and the last exit value
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
 use crate::{ApplicationState, Separator};
+use promptr_macros::SerializeNonDefault;
 
 pub struct CommandStatus {}
 
@@ -15,7 +16,7 @@ pub struct Args {}
 /// Theme for the [`CommandStatus`] segment.
 ///
 /// TODO: Make the exit status coloring optional
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     /// Foreground color when the exit status is zero

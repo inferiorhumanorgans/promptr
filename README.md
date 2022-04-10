@@ -43,20 +43,14 @@ cargo install promptr
 After installing the `promptr` binary, the next step is to tell `bash` to call `promptr` each time a new prompt is rendered.  For your first time this will do the trick:
 
 ```bash
-source <(promptr init)>
-```
-
-`promptr init` will ensure that the configuration directory exists and if no configuration file exists the default configuration will be written to disk.
-
-To persist this across every invocation add that to your `.bash_profile`, `.profile`, or `.bashrc` as appropriate.  Which file your instance of `bash` will load depends on your operating system and local configuration.  If you would like a quieter startup experience place this in your `bash` configuration file instead:
-
-```bash
 source <(promptr load)>
 ```
 
+To persist this across every invocation add that to your `.bash_profile`, `.profile`, or `.bashrc` as appropriate.  Which file your instance of `bash` will load depends on your operating system and local configuration.
+
 ## Usage
 
-Batteries *are* included.  Once you run the init command you don't need to do anything else.  If you want to add or remove segments, change colors, or change icons the configuration file is in a platform specific location.  Run `promptr location` to get the path to the configuration directory on your system.  For e.g.:
+Batteries *are* included.  Once you run the load command you don't need to do anything else.  If you want to add or remove segments, change colors, or change icons the configuration file is in a platform specific location.  Run `promptr location` to get the path to the configuration directory on your system.  For e.g.:
 
 ```
 $ uname -s

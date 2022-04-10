@@ -35,11 +35,12 @@ use std::str::FromStr;
 
 use anyhow::anyhow;
 use regex::Regex;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
 
 use crate::ansi::Color;
 use crate::segment::{Segment, ToSegment};
 use crate::{ApplicationState, Separator};
+use promptr_macros::SerializeNonDefault;
 
 pub struct Rvm {}
 
@@ -75,7 +76,7 @@ pub struct Gemset<SemType: std::fmt::Debug + FromStr> {
 }
 
 /// Theme for the [`Rvm`] segment, located at `theme.rvm` in the [`configuration file`](`crate::PromptrConfig`)
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, SerializeNonDefault)]
 #[serde(default, deny_unknown_fields)]
 pub struct Theme {
     /// Foreground color for the [`Rvm`] segment
