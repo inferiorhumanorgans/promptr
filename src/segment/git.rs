@@ -286,15 +286,28 @@ fn seg_current_branch(
         true => (theme.repo_dirty_fg, theme.repo_dirty_bg),
     };
 
-    let head = match repo.head() {
-        Ok(head) => Some(head),
-        Err(ref e) if e.code() == ErrorCode::UnbornBranch || e.code() == ErrorCode::NotFound => {
-            None
+    let head = match repo.state() {
+        RepositoryState::RebaseInteractive => {
+            // No support for this in libgit2 either
+            let head_ref = read_to_string(repo.path().join("rebase-merge/head-name")).unwrap();
+            let head_ref = head_ref.trim_end_matches('\n');
+            let head_ref = repo.find_reference(head_ref)?;
+            Some(
+                head_ref.shorthand().unwrap().to_owned()
+            )
+        },
+        _ => {
+            let head = match repo.head() {
+                Ok(head) => Some(head),
+                Err(ref e) if e.code() == ErrorCode::UnbornBranch || e.code() == ErrorCode::NotFound => {
+                    None
+                }
+                Err(e) => Err(e)?,
+            };
+        
+            head.as_ref().and_then(|h| h.shorthand()).map(str::to_owned)
         }
-        Err(e) => Err(e)?,
     };
-
-    let head = head.as_ref().and_then(|h| h.shorthand());
 
     segments.push(Segment {
         bg,
@@ -303,7 +316,7 @@ fn seg_current_branch(
         text: format!(
             "{} {}",
             theme.symbols.git,
-            head.unwrap_or("HEAD (no branch)")
+            head.unwrap_or(String::from("HEAD (no branch)"))
         ),
         source: "Git::Branch",
     });
