@@ -32,7 +32,7 @@ pub use anyhow::Result;
 
 /// Global application state.  Includes information that we've captured from the shell and theme
 /// information.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ApplicationState<'a> {
     pub theme: &'a Theme,
     pub env: HashMap<String, String>,
@@ -81,7 +81,7 @@ pub struct SegmentConfig {
 /// Separator shown between segments
 ///
 /// Typically the thick separator is used unless the background of two adjacent segments is the same.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Separator {
     Thin,
     Thick,

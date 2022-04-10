@@ -8,6 +8,8 @@
 //! * untracked items count
 //! * in-progress action (e.g. rebase, merge, cherry pick)
 //! * stash count
+//! 
+//! For information about the tests see the README in git-tests/
 
 use std::fs::read_to_string;
 
@@ -361,7 +363,15 @@ impl ToSegment for Git {
     ) -> crate::Result<Vec<Segment>> {
         let args = args.unwrap_or_default();
 
-        let mut repo = match Repository::discover(".") {
+        // Unfortunately we have to stub things out like this as rust runs all tests in a module
+        // from a single process.
+        #[cfg(test)]
+        let repo_path = state.env.get("__PROMPTR_GIT_REPO").expect("gotta set __PROMPTR_GIT_REPO to run tests");
+        
+        #[cfg(not(test))]
+        let repo_path = ".";
+
+        let mut repo = match Repository::discover(repo_path) {
             Ok(repo) => repo,
             Err(_) => return Ok(vec![]),
         };

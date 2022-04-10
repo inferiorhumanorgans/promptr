@@ -1,4 +1,6 @@
 mod command_status;
+#[cfg(feature = "segment-git")]
+mod git;
 mod hostname;
 mod path;
 mod screen;

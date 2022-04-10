@@ -19,7 +19,7 @@ use crate::ansi::Color;
 use crate::{ApplicationState, Separator};
 
 /// Represents a rendered segment
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Segment {
     /// Background color
     pub bg: Color,
