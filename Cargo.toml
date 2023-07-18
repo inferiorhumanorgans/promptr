@@ -19,7 +19,7 @@ anyhow = "1.0"
 battery = { version = "0.7.8", optional = true }
 clap = { version = "3", features = [ "derive" ] }
 directories = "4.0"
-git2 = { version = "0.14", optional = true }
+git2 = { version = "0.17", optional = true }
 indoc = "1.0"
 itertools = "0.10"
 promptr-macros = { path = "promptr-macros" }
